@@ -1,21 +1,30 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import {
+  useFonts,
+  Jost_400Regular,
+  Jost_600SemiBold,
+} from "@expo-google-fonts/jost";
+import AppLoading from 'expo-app-loading';
+import RootContainer from "./src/routes";
+import { StatusBar} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import AuthProvider from './src/contexts/auth';
+
+console.disableYellowBox = true
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Jost_400Regular,
+    Jost_600SemiBold,
+  });
+
+  if (!fontsLoaded) return <AppLoading />;
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <AuthProvider>
+        <StatusBar backgroundColor="#fbece8" barStyle="dark-content" />
+        <RootContainer />
+      </AuthProvider>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
