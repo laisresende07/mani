@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { StyleSheet, TouchableWithoutFeedback, Text, Animated, View } from "react-native";
+import { StyleSheet, TouchableWithoutFeedback, Animated, View } from "react-native";
 
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import colors from "../styles/colors";
@@ -12,15 +12,14 @@ export function FloatingButton() {
 
     function handleButtons(){
         setActive(!active)
-        console.log(active)
     }
 
     function addIncome(){
-        navigation.navigate('Registros')
+        navigation.navigate('Income')
     }
 
     function addExpense(){
-        navigation.navigate('Notícias')
+        navigation.navigate('Expense')
     }
 
     return (

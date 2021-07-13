@@ -1,6 +1,11 @@
 import Icon from "react-native-vector-icons/Feather";
 import React, { useContext } from "react";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem,
+} from "@react-navigation/drawer";
 import { createStackNavigator } from "@react-navigation/stack";
 import Welcome from "../pages/Welcome";
 import Register from "../pages/Register";
@@ -14,6 +19,9 @@ import fonts from "../styles/fonts";
 import colors from "../styles/colors";
 import { AuthContext } from "../contexts/auth";
 import { View, ActivityIndicator } from "react-native";
+import Income from "../pages/Income";
+import Expense from "../pages/Expense";
+import firebase from "../services/firebaseConnection";
 
 const drawerButton = (navigation) => {
   return (
@@ -101,6 +109,41 @@ function HomeStack() {
           headerTintColor: colors.blue,
           headerTitleStyle: {
             fontFamily: fonts.regular,
+          },
+        })}
+      />
+
+      <RecordsStackNav.Screen
+        name="Income"
+        component={Income}
+        options={({ navigation }) => ({
+          title: "VOLTAR",
+          headerStyle: {
+            backgroundColor: colors.shape,
+            shadowColor: colors.shape,
+            elevation: 0,
+          },
+          headerTintColor: colors.blue,
+          headerTitleStyle: {
+            fontFamily: fonts.semibold,
+            fontSize: 16,
+          },
+        })}
+      />
+      <RecordsStackNav.Screen
+        name="Expense"
+        component={Expense}
+        options={({ navigation }) => ({
+          title: "VOLTAR",
+          headerStyle: {
+            backgroundColor: colors.shape,
+            shadowColor: colors.shape,
+            elevation: 0,
+          },
+          headerTintColor: colors.blue,
+          headerTitleStyle: {
+            fontFamily: fonts.semibold,
+            fontSize: 16,
           },
         })}
       />
@@ -213,7 +256,7 @@ function NewsStack() {
 }
 
 function RootContainer() {
-  const { signed, loading } = useContext(AuthContext);
+  const { signed, loading, signOut } = useContext(AuthContext);
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -232,7 +275,7 @@ function RootContainer() {
         drawerContentOptions={{
           labelStyle: {
             fontFamily: fonts.regular,
-            fontSize: 16
+            fontSize: 16,
           },
           inactiveTintColor: colors.blue,
           activeTintColor: colors.orange,
@@ -243,6 +286,19 @@ function RootContainer() {
             borderRadius: 6,
           },
         }}
+        // drawerContent={(props) => {
+        //   return (
+        //     <DrawerContentScrollView {...props}>
+        //       <DrawerItemList {...props} />
+        //       <DrawerItem
+        //         label="Logout"
+        //         onPress={async () => {
+        //           await firebase.auth().signOut();
+        //         }}
+        //       />
+        //     </DrawerContentScrollView>
+        //   );
+        // }}
       >
         <Drawer.Screen name="Home" component={HomeStack} />
         <Drawer.Screen name="Perfil" component={ProfileStack} />

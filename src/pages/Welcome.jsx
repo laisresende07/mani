@@ -86,12 +86,12 @@ const styles = StyleSheet.create({
     subtitle: {
         textAlign: "right",
         width: '100%',
-        fontSize: 18,
+        fontSize: 14,
         paddingHorizontal: 20,
-        paddingVertical: 10,
+        paddingVertical: 5,
         color: colors.blue,
         fontFamily: fonts.regular,
-        lineHeight: 20,
+        lineHeight: 14,
     },
     button: {
         backgroundColor: colors.green,
