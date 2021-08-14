@@ -1,9 +1,6 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
 
-import colors from "../styles/colors";
-import fonts from "../styles/fonts";
-
 export function Button({ title, btnStyle, txtStyle, ...rest }) {
     return (
         <TouchableOpacity

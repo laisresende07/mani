@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
     Text,
     SafeAreaView,
@@ -10,14 +10,45 @@ import {
 } from "react-native";
 import { AuthContext } from '../contexts/auth';
 import { useNavigation } from '@react-navigation/native';
+import { Picker } from '@react-native-picker/picker';
 import { format } from 'date-fns';
 import firebase from '../services/firebaseConnection';
 
 export function Income() {
     const [valor, setValor] = useState('');
+    const [desc, setDesc] = useState('');
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
 
     const navigation = useNavigation();
     const { user: userContext } = useContext(AuthContext);
+    const uid = userContext && userContext.uid;
+
+    useEffect(() => {
+        
+
+        async function loadCategories() {
+
+            await firebase
+                .database()
+                .ref('categorias')
+                .child(uid)
+                .on('value', snapshot => {
+                    setCategories([]);
+                    let list = [];
+
+                    snapshot.forEach(childItem => {
+                        if (childItem.val().tipo == 'receita') {
+                            list.push(childItem.val().nome)
+                        }
+                    });
+
+                    setCategories(list);
+                });
+        }
+
+        loadCategories();
+    }, []);
 
     function handleSubmit() {
         Keyboard.dismiss();
@@ -28,7 +59,7 @@ export function Income() {
 
         Alert.alert(
             'Confirmando dados',
-            `Tipo: Receita - Valor: R$ ${parseFloat(valor)}`,
+            `Tipo: Receita - Valor: R$ ${parseFloat(valor)} - Categoria: ${selectedCategory} - Descrição: ${desc}`,
             [
                 {
                     text: 'Cancelar',
@@ -49,7 +80,9 @@ export function Income() {
         await firebase.database().ref('historico').child(uid).child(key).set({
             tipo: 'receita',
             valor: parseFloat(valor),
-            date: format(new Date(), 'dd/MM/yy')
+            date: format(new Date(), 'dd/MM/yy'),
+            categoria: selectedCategory,
+            descricao: desc
         })
 
         let user = firebase.database().ref('users').child(uid);
@@ -63,7 +96,9 @@ export function Income() {
 
         Keyboard.dismiss();
         setValor('');
-        navigation.navigate('Home');
+        setDesc('');
+        setSelectedCategory('');
+        navigation.navigate('Página inicial');
     }
 
     return (
@@ -77,6 +112,25 @@ export function Income() {
                 value={valor}
                 onChangeText={text => setValor(text)}
             />
+            <TextInput
+                placeholder="Descrição"
+                returnKeyType="next"
+                onSubmitEditing={() => Keyboard.dismiss()}
+                value={desc}
+                onChangeText={text => setDesc(text)}
+            />
+            <Picker
+                selectedValue={selectedCategory}
+                onValueChange={item =>
+                    setSelectedCategory(item)
+                }>
+                    <Picker.Item label='Categoria' value='' />
+                {
+                    categories.map(category => 
+                        <Picker.Item key={category} label={category} value={category} />
+                    )
+                }
+            </Picker>
             <TouchableWithoutFeedback onPress={handleSubmit}>
                 <Text>Registrar</Text>
             </TouchableWithoutFeedback>

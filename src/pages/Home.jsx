@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, Children } from "react";
 import {
     Text,
     View,
@@ -18,12 +18,15 @@ import { useNavigation } from "@react-navigation/core";
 
 import FloatingButton from '../components/FloatingButton';
 import { HistoricoList } from "../components/HistoricoList";
+import { MainHeader } from "../components/MainHeader";
 
 export function Home() {
     const navigation = useNavigation();
 
     const [saldo, setSaldo] = useState(0);
     const [historico, setHistorico] = useState([]);
+    const [receitas, setReceitas] = useState(0);
+    const [despesas, setDespesas] = useState(0);
 
     const { user } = useContext(AuthContext);
     const uid = user && user.uid;
@@ -58,6 +61,27 @@ export function Home() {
                         setHistorico(oldArray => [...oldArray, list].reverse());
                     });
                 });
+
+            await firebase
+                .database()
+                .ref('historico')
+                .child(uid)
+                .orderByChild('date')
+                .equalTo(format(new Date(), 'dd/MM/yy'))
+                .on('value', snapshot => {
+
+                    let rec = 0, desp = 0;
+
+                    snapshot.forEach(childItem => {
+                        if (childItem.val().tipo == 'despesa') {
+                            desp += childItem.val().valor;
+                        } else {
+                            rec += childItem.val().valor;
+                        }
+                        setReceitas(rec);
+                        setDespesas(desp);
+                    });
+                });
         }
 
         loadList();
@@ -65,47 +89,72 @@ export function Home() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={[styles.card, styles.row]}>
-                <Text style={styles.text}>SALDO</Text>
-                <Text style={styles.value}>
-                    <NumberFormat
-                        value={saldo}
-                        displayType={'text'}
-                        thousandSeparator={'.'}
-                        decimalSeparator={','}
-                        decimalScale={2}
-                        prefix={'R$ '}
-                        fixedDecimalScale={true}
-                        renderText={value => <Text>{value}</Text>}
-                    />
-                </Text>
-            </View>
-            <View style={styles.content}>
-                <Text style={styles.caption}>HOJE</Text>
-                <View style={styles.card}>
-                    <View style={styles.row}>
-                        <View style={styles.amount}>
-                            <MaterialIcons name='north-east' size={20} style={styles.up} />
-                            <Text style={styles.simpleText}>R$ 1.035,50</Text>
-                        </View>
-                        <View style={styles.amount}>
-                            <MaterialIcons name='south-west' size={20} style={styles.down} />
-                            <Text style={styles.simpleText}>R$ 2.507,83</Text>
-                        </View>
-                    </View>
-                    <FlatList
-                        style={styles.list}
-                        showsVerticalScrollIndicator={false}
-                        data={historico}
-                        keyExtractor={item => item.key}
-                        renderItem={({ item }) => <HistoricoList data={item} />}
-                    />
-                    <TouchableOpacity style={styles.seeAllBtn} onPress={navigation.navigate("Registros")}>
-                        <Text style={styles.seeAllTxt}>VER TUDO</Text>
-                    </TouchableOpacity>
+            <MainHeader />
+            <View style={styles.innerContainer}>
+                <View style={[styles.card, styles.row]}>
+                    <Text style={styles.text}>SALDO</Text>
+                    <Text style={styles.value}>
+                        <NumberFormat
+                            value={saldo}
+                            displayType={'text'}
+                            thousandSeparator={'.'}
+                            decimalSeparator={','}
+                            decimalScale={2}
+                            prefix={'R$ '}
+                            fixedDecimalScale={true}
+                            renderText={value => <Text>{value}</Text>}
+                        />
+                    </Text>
                 </View>
+                <View style={styles.content}>
+                    <Text style={styles.caption}>HOJE</Text>
+                    <View style={styles.card}>
+                        <View style={styles.row}>
+                            <View style={styles.amount}>
+                                <MaterialIcons name='north-east' size={20} style={styles.up} />
+                                <Text style={styles.simpleText}>
+                                    <NumberFormat
+                                        value={receitas}
+                                        displayType={'text'}
+                                        thousandSeparator={'.'}
+                                        decimalSeparator={','}
+                                        decimalScale={2}
+                                        prefix={'R$ '}
+                                        fixedDecimalScale={true}
+                                        renderText={value => <Text>{value}</Text>}
+                                    />
+                                </Text>
+                            </View>
+                            <View style={styles.amount}>
+                                <MaterialIcons name='south-west' size={20} style={styles.down} />
+                                <Text style={styles.simpleText}>
+                                    <NumberFormat
+                                        value={despesas}
+                                        displayType={'text'}
+                                        thousandSeparator={'.'}
+                                        decimalSeparator={','}
+                                        decimalScale={2}
+                                        prefix={'R$ '}
+                                        fixedDecimalScale={true}
+                                        renderText={value => <Text>{value}</Text>}
+                                    />
+                                </Text>
+                            </View>
+                        </View>
+                        <FlatList
+                            style={styles.list}
+                            showsVerticalScrollIndicator={false}
+                            data={historico}
+                            keyExtractor={item => item.key}
+                            renderItem={({ item }) => <HistoricoList data={item} />}
+                        />
+                        <TouchableOpacity style={styles.seeAllBtn} onPress={() => navigation.navigate("Relatórios")}>
+                            <Text style={styles.seeAllTxt}>VER TUDO</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <FloatingButton />
             </View>
-            <FloatingButton />
         </SafeAreaView >
     );
 }
@@ -113,9 +162,14 @@ export function Home() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        marginTop: 0,
+        marginHorizontal: 0,
+        backgroundColor: colors.shape
+    },
+    innerContainer: {
         marginTop: 30,
         marginHorizontal: 20,
-        backgroundColor: colors.backgroundColor
+        flex: 1,
     },
     card: {
         padding: 20,
@@ -190,7 +244,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: .5,
-        borderColor: colors.orange,
+        borderColor: colors.blue,
         borderRadius: 6,
         padding: 10,
         marginTop: 10

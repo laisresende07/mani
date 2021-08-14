@@ -8,7 +8,7 @@ import {
 export function Records() {
     return (
         <SafeAreaView style={styles.container}>
-            <Text>Records</Text>
+            <Text>AAAAAAAAAAAAAAAAAAAAAAAAAAAAA</Text>
         </SafeAreaView >
     );
 }

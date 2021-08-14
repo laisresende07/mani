@@ -5,14 +5,12 @@ import {
     SafeAreaView,
     StyleSheet,
     TextInput,
-    TouchableOpacity,
     KeyboardAvoidingView,
     TouchableWithoutFeedback,
     Platform,
     Keyboard,
     ActivityIndicator
 } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
 import colors from "../styles/colors";
 import fonts from "../styles/fonts";
 
@@ -20,6 +18,7 @@ import {AuthContext} from "../contexts/auth";
 
 import { Button } from '../components/Button';
 import { useNavigation } from "@react-navigation/core";
+import { HeaderBack } from "../components/HeaderBack";
 
 export function Register() {
     const [email, setEmail] = useState('');
@@ -39,6 +38,7 @@ export function Register() {
 
     return (
         <SafeAreaView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <HeaderBack />
             <KeyboardAvoidingView style={styles.container}>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.wrapper}>
@@ -49,6 +49,7 @@ export function Register() {
                             value={name}
                             onChangeText={text => setName(text)} />
                         <TextInput style={styles.input} placeholder="Email"
+                        keyboardType="email-address"
                             value={email}
                             onChangeText={text => setEmail(text)} />
                         <TextInput style={styles.input} placeholder="Senha"
@@ -76,6 +77,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
+        backgroundColor: colors.white,
     },
     btnStyle2: {
         backgroundColor: colors.blue,
@@ -95,7 +97,6 @@ const styles = StyleSheet.create({
         fontFamily: fonts.semibold,
     },
     wrapper: {
-        backgroundColor: colors.white,
         alignItems: "center",
         justifyContent: "center",
         paddingHorizontal: 20,

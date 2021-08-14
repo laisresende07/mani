@@ -1,4 +1,4 @@
-import React, {useState, useContext} from "react";
+import React, { useState, useContext } from "react";
 import {
     Text,
     View,
@@ -15,29 +15,31 @@ import { MaterialIcons } from "@expo/vector-icons";
 import colors from "../styles/colors";
 import fonts from "../styles/fonts";
 
-import {AuthContext} from "../contexts/auth";
+import { AuthContext } from "../contexts/auth";
 
 import { Button } from '../components/Button';
 import { useNavigation } from "@react-navigation/core";
+import { HeaderBack } from "../components/HeaderBack";
 
 export function Login() {
     const [email, setEmail] = useState('carol@gmail.com');
     const [password, setPassword] = useState('carol123');
 
     const navigation = useNavigation();
-    
-    const {signIn, loadingAuth } = useContext(AuthContext);
 
-    function handleLogin(){
+    const { signIn, loadingAuth } = useContext(AuthContext);
+
+    function handleLogin() {
         signIn(email, password);
     }
 
-    function handleSignUp(){
+    function handleSignUp() {
         navigation.navigate('Register')
     }
 
     return (
         <SafeAreaView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <HeaderBack />
             <KeyboardAvoidingView style={styles.container}>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.wrapper}>
@@ -45,9 +47,10 @@ export function Login() {
                             LOGIN
                         </Text>
                         <TextInput style={styles.input} placeholder="Digite seu email"
+                            keyboardType="email-address"
                             value={email}
-                            onChangeText={text => setEmail(text)}  />
-                        <TextInput style={styles.input} placeholder="Digite sua senha" 
+                            onChangeText={text => setEmail(text)} />
+                        <TextInput style={styles.input} placeholder="Digite sua senha"
                             secureTextEntry={true}
                             value={password}
                             onChangeText={text => setPassword(text)} />
@@ -67,6 +70,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
+        backgroundColor: colors.white,
     },
     btnStyle2: {
         backgroundColor: colors.blue,
@@ -86,7 +90,6 @@ const styles = StyleSheet.create({
         fontFamily: fonts.semibold,
     },
     wrapper: {
-        backgroundColor: colors.white,
         alignItems: "center",
         justifyContent: "center",
         paddingHorizontal: 20,

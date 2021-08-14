@@ -1,11 +1,5 @@
-import Icon from "react-native-vector-icons/Feather";
 import React, { useContext } from "react";
-import {
-  createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItemList,
-  DrawerItem,
-} from "@react-navigation/drawer";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createStackNavigator } from "@react-navigation/stack";
 import Welcome from "../pages/Welcome";
 import Register from "../pages/Register";
@@ -21,242 +15,26 @@ import { AuthContext } from "../contexts/auth";
 import { View, ActivityIndicator } from "react-native";
 import Income from "../pages/Income";
 import Expense from "../pages/Expense";
-import firebase from "../services/firebaseConnection";
-
-const drawerButton = (navigation) => {
-  return (
-    <Icon
-      name="menu"
-      size={24}
-      style={{ marginLeft: 20 }}
-      onPress={() => navigation.toggleDrawer()}
-    />
-  );
-};
-
-const profileButton = (navigation) => {
-  return (
-    <Icon
-      name="user"
-      size={24}
-      style={{ marginRight: 20 }}
-      onPress={() => navigation.navigate("Perfil")}
-    />
-  );
-};
-
-const Drawer = createDrawerNavigator();
 
 const LoginStackNav = createStackNavigator();
-
 function LoginStack() {
   return (
     <LoginStackNav.Navigator
       initialRouteName="Welcome"
       screenOptions={{
-        title: "VOLTAR",
-        headerStyle: {
-          backgroundColor: colors.shape,
-          shadowColor: colors.shape,
-          elevation: 0,
-        },
-        headerTintColor: colors.blue,
-        headerTitleStyle: {
-          fontFamily: fonts.semibold,
-          fontSize: 16,
-        },
+        headerShown: false,
       }}
     >
-      <LoginStackNav.Screen
-        name="Welcome"
-        component={Welcome}
-        options={{
-          title: "",
-          headerStyle: {
-            backgroundColor: colors.white,
-            shadowColor: colors.white,
-            elevation: 0,
-            height: 0,
-          },
-          headerTintColor: colors.blue,
-          headerTitleStyle: {
-            fontFamily: fonts.regular,
-          },
-        }}
-      />
+      <LoginStackNav.Screen name="Welcome" component={Welcome} />
       <LoginStackNav.Screen name="Login" component={Login} />
       <LoginStackNav.Screen name="Register" component={Register} />
     </LoginStackNav.Navigator>
   );
 }
-
-const HomeStackNav = createStackNavigator();
-function HomeStack() {
-  return (
-    <HomeStackNav.Navigator initialRouteName="Home">
-      <HomeStackNav.Screen
-        name="Home"
-        component={Home}
-        options={({ navigation }) => ({
-          headerLeft: () => drawerButton(navigation),
-          headerRight: () => profileButton(navigation),
-          title: "",
-          headerStyle: {
-            backgroundColor: colors.shape,
-            shadowColor: colors.shape,
-            elevation: 0,
-          },
-          headerTintColor: colors.blue,
-          headerTitleStyle: {
-            fontFamily: fonts.regular,
-          },
-        })}
-      />
-
-      <RecordsStackNav.Screen
-        name="Income"
-        component={Income}
-        options={({ navigation }) => ({
-          title: "VOLTAR",
-          headerStyle: {
-            backgroundColor: colors.shape,
-            shadowColor: colors.shape,
-            elevation: 0,
-          },
-          headerTintColor: colors.blue,
-          headerTitleStyle: {
-            fontFamily: fonts.semibold,
-            fontSize: 16,
-          },
-        })}
-      />
-      <RecordsStackNav.Screen
-        name="Expense"
-        component={Expense}
-        options={({ navigation }) => ({
-          title: "VOLTAR",
-          headerStyle: {
-            backgroundColor: colors.shape,
-            shadowColor: colors.shape,
-            elevation: 0,
-          },
-          headerTintColor: colors.blue,
-          headerTitleStyle: {
-            fontFamily: fonts.semibold,
-            fontSize: 16,
-          },
-        })}
-      />
-    </HomeStackNav.Navigator>
-  );
-}
-
-const ProfileStackNav = createStackNavigator();
-function ProfileStack() {
-  return (
-    <ProfileStackNav.Navigator initialRouteName="Perfil">
-      <ProfileStackNav.Screen
-        name="Perfil"
-        component={Profile}
-        options={({ navigation }) => ({
-          headerLeft: () => drawerButton(navigation),
-          headerRight: () => profileButton(navigation),
-          title: "",
-          headerStyle: {
-            backgroundColor: colors.shape,
-            shadowColor: colors.shape,
-            elevation: 0,
-          },
-          headerTintColor: colors.blue,
-          headerTitleStyle: {
-            fontFamily: fonts.regular,
-          },
-        })}
-      />
-    </ProfileStackNav.Navigator>
-  );
-}
-
-const RecordsStackNav = createStackNavigator();
-function RecordsStack() {
-  return (
-    <RecordsStackNav.Navigator initialRouteName="Records">
-      <RecordsStackNav.Screen
-        name="Records"
-        component={Records}
-        options={({ navigation }) => ({
-          headerLeft: () => drawerButton(navigation),
-          headerRight: () => profileButton(navigation),
-          title: "",
-          headerStyle: {
-            backgroundColor: colors.shape,
-            shadowColor: colors.shape,
-            elevation: 0,
-          },
-          headerTintColor: colors.blue,
-          headerTitleStyle: {
-            fontFamily: fonts.regular,
-          },
-        })}
-      />
-    </RecordsStackNav.Navigator>
-  );
-}
-
-const CategoriesStackNav = createStackNavigator();
-function CategoriesStack() {
-  return (
-    <CategoriesStackNav.Navigator initialRouteName="Categories">
-      <CategoriesStackNav.Screen
-        name="Categories"
-        component={Categories}
-        options={({ navigation }) => ({
-          headerLeft: () => drawerButton(navigation),
-          headerRight: () => profileButton(navigation),
-          title: "",
-          headerStyle: {
-            backgroundColor: colors.shape,
-            shadowColor: colors.shape,
-            elevation: 0,
-          },
-          headerTintColor: colors.blue,
-          headerTitleStyle: {
-            fontFamily: fonts.regular,
-          },
-        })}
-      />
-    </CategoriesStackNav.Navigator>
-  );
-}
-
-const NewsStackNav = createStackNavigator();
-function NewsStack() {
-  return (
-    <NewsStackNav.Navigator initialRouteName="News">
-      <NewsStackNav.Screen
-        name="News"
-        component={News}
-        options={({ navigation }) => ({
-          headerLeft: () => drawerButton(navigation),
-          headerRight: () => profileButton(navigation),
-          title: "",
-          headerStyle: {
-            backgroundColor: colors.shape,
-            shadowColor: colors.shape,
-            elevation: 0,
-          },
-          headerTintColor: colors.blue,
-          headerTitleStyle: {
-            fontFamily: fonts.regular,
-          },
-        })}
-      />
-    </NewsStackNav.Navigator>
-  );
-}
+const Drawer = createDrawerNavigator();
 
 function RootContainer() {
-  const { signed, loading, signOut } = useContext(AuthContext);
+  const { signed, loading } = useContext(AuthContext);
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -268,9 +46,12 @@ function RootContainer() {
   if (signed) {
     return (
       <Drawer.Navigator
-        initialRouteName="Home"
+      initialRouteName="Home"
         drawerStyle={{
           backgroundColor: "#ffffff",
+        }}
+        screenOptions={{
+          headerShown: false,
         }}
         drawerContentOptions={{
           labelStyle: {
@@ -286,25 +67,14 @@ function RootContainer() {
             borderRadius: 6,
           },
         }}
-        // drawerContent={(props) => {
-        //   return (
-        //     <DrawerContentScrollView {...props}>
-        //       <DrawerItemList {...props} />
-        //       <DrawerItem
-        //         label="Logout"
-        //         onPress={async () => {
-        //           await firebase.auth().signOut();
-        //         }}
-        //       />
-        //     </DrawerContentScrollView>
-        //   );
-        // }}
       >
-        <Drawer.Screen name="Home" component={HomeStack} />
-        <Drawer.Screen name="Perfil" component={ProfileStack} />
-        <Drawer.Screen name="Registros" component={RecordsStack} />
-        <Drawer.Screen name="Categorias" component={CategoriesStack} />
-        <Drawer.Screen name="Notícias" component={NewsStack} />
+        <Drawer.Screen name="Página inicial" component={Home} />
+        <Drawer.Screen name="Categorias" component={Categories} />
+        <Drawer.Screen name="Notícias" component={News} />
+        <Drawer.Screen name="Nova receita" component={Income} />
+        <Drawer.Screen name="Nova despesa" component={Expense} />
+        <Drawer.Screen name="Perfil" component={Profile} />
+        <Drawer.Screen name="Relatórios" component={Records} />
       </Drawer.Navigator>
     );
   } else {
@@ -313,3 +83,143 @@ function RootContainer() {
 }
 
 export default RootContainer;
+
+
+
+
+
+
+
+// const HomeStackNav = createStackNavigator();
+
+// function HomeStack() {
+//   return (
+//     <HomeStackNav.Navigator>
+//       <HomeStackNav.Screen
+//         name="Home"
+//         component={Home}
+//         options={({ navigation }) => ({
+//           headerLeft: () => drawerButton(navigation),
+//           headerRight: () => profileButton(navigation),
+//           title: "",
+//           headerStyle: {
+//             backgroundColor: colors.shape,
+//             shadowColor: colors.shape,
+//             elevation: 0,
+//           },
+//           headerTintColor: colors.blue,
+//           headerTitleStyle: {
+//             fontFamily: fonts.regular,
+//           },
+//         })}
+//       />
+
+//       <HomeStackNav.Screen name="Income" component={Income} />
+//       <HomeStackNav.Screen name="Expense" component={Expense} />
+//     </HomeStackNav.Navigator>
+//   );
+// }
+
+// const ProfileStackNav = createStackNavigator();
+// function ProfileStack() {
+//   return (
+//     <ProfileStackNav.Navigator initialRouteName="Perfil">
+//       <ProfileStackNav.Screen
+//         name="Perfil"
+//         component={Profile}
+//         options={({ navigation }) => ({
+//           headerLeft: () => drawerButton(navigation),
+//           headerRight: () => profileButton(navigation),
+//           title: "",
+//           headerStyle: {
+//             backgroundColor: colors.shape,
+//             shadowColor: colors.shape,
+//             elevation: 0,
+//           },
+//           headerTintColor: colors.blue,
+//           headerTitleStyle: {
+//             fontFamily: fonts.regular,
+//           },
+//         })}
+//       />
+//     </ProfileStackNav.Navigator>
+//   );
+// }
+
+// const RecordsStackNav = createStackNavigator();
+// function RecordsStack() {
+//   return (
+//     <RecordsStackNav.Navigator>
+//       <RecordsStackNav.Screen
+//         name="Records"
+//         component={Records}
+//         options={({ navigation }) => ({
+//           headerLeft: () => drawerButton(navigation),
+//           headerRight: () => profileButton(navigation),
+//           title: "",
+//           headerStyle: {
+//             backgroundColor: colors.shape,
+//             shadowColor: colors.shape,
+//             elevation: 0,
+//           },
+//           headerTintColor: colors.blue,
+//           headerTitleStyle: {
+//             fontFamily: fonts.regular,
+//           },
+//         })}
+//       />
+//     </RecordsStackNav.Navigator>
+//   );
+// }
+
+// const CategoriesStackNav = createStackNavigator();
+// function CategoriesStack() {
+//   return (
+//     <CategoriesStackNav.Navigator initialRouteName="Categories">
+//       <CategoriesStackNav.Screen
+//         name="Categories"
+//         component={Categories}
+//         options={({ navigation }) => ({
+//           headerLeft: () => drawerButton(navigation),
+//           headerRight: () => profileButton(navigation),
+//           title: "",
+//           headerStyle: {
+//             backgroundColor: colors.shape,
+//             shadowColor: colors.shape,
+//             elevation: 0,
+//           },
+//           headerTintColor: colors.blue,
+//           headerTitleStyle: {
+//             fontFamily: fonts.regular,
+//           },
+//         })}
+//       />
+//     </CategoriesStackNav.Navigator>
+//   );
+// }
+
+// const NewsStackNav = createStackNavigator();
+// function NewsStack() {
+//   return (
+//     <NewsStackNav.Navigator initialRouteName="News">
+//       <NewsStackNav.Screen
+//         name="News"
+//         component={News}
+//         options={({ navigation }) => ({
+//           headerLeft: () => drawerButton(navigation),
+//           headerRight: () => profileButton(navigation),
+//           title: "",
+//           headerStyle: {
+//             backgroundColor: colors.shape,
+//             shadowColor: colors.shape,
+//             elevation: 0,
+//           },
+//           headerTintColor: colors.blue,
+//           headerTitleStyle: {
+//             fontFamily: fonts.regular,
+//           },
+//         })}
+//       />
+//     </NewsStackNav.Navigator>
+//   );
+// }

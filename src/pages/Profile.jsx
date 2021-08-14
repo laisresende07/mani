@@ -3,10 +3,14 @@ import {
     Text,
     SafeAreaView,
     StyleSheet,
-    TouchableOpacity
+    TouchableOpacity,
+    View
 } from "react-native";
+import { Button } from "../components/Button";
+import { HeaderBack } from "../components/HeaderBack";
 import { AuthContext } from '../contexts/auth';
-import firebase from '../services/firebaseConnection'
+import colors from "../styles/colors";
+import fonts from "../styles/fonts";
 
 export function Profile() {
     const { signOut } = useContext(AuthContext);
@@ -17,10 +21,11 @@ export function Profile() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Text>Profile</Text>
-            <TouchableOpacity onPress={handleLogout}>
-                <Text>SAIR</Text>
-            </TouchableOpacity>
+            <HeaderBack title="Seu perfil" />
+            <View style={styles.innerContainer}>
+                <Text>Profile</Text>
+                <Button title="Sair" onPress={handleLogout} btnStyle={styles.btnSair} txtStyle={styles.txtSair} />
+            </View>
         </SafeAreaView >
     );
 }
@@ -28,9 +33,23 @@ export function Profile() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    innerContainer: {
+        flex: 1,
         justifyContent: 'center',
         marginHorizontal: 20,
     },
+    btnSair: {
+        backgroundColor: colors.orange,
+        marginTop: 60
+    },
+    txtSair: {
+        textTransform: 'uppercase',
+        color: colors.white,
+        letterSpacing: 2,
+        fontFamily: fonts.regular,
+        fontSize: 18
+    }
 });
 
 export default Profile;

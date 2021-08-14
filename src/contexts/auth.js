@@ -70,7 +70,7 @@ function AuthProvider({ children }) {
 
   async function signOut() {
     await firebase.auth().signOut();
-    console.log(user)
+    setUser(null);
   }
 
   return (

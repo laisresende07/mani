@@ -15,11 +15,13 @@ export function FloatingButton() {
     }
 
     function addIncome(){
-        navigation.navigate('Income')
+        navigation.navigate('Nova receita')
+        setActive(false)
     }
 
     function addExpense(){
-        navigation.navigate('Expense')
+        navigation.navigate('Nova despesa')
+        setActive(false)
     }
 
     return (

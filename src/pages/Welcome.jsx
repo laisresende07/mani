@@ -46,6 +46,7 @@ export function Welcome() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: colors.white
     },
     btnStyle1: {
         borderWidth: 2,
@@ -66,7 +67,6 @@ const styles = StyleSheet.create({
     },
     wrapper: {
         flex: 1,
-        backgroundColor: colors.white,
         alignItems: "center",
         justifyContent: "space-around",
         paddingHorizontal: 20,
