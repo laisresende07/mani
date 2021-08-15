@@ -81,12 +81,12 @@ export function Expense() {
     const navigation = useNavigation();
     const { user: userContext } = useContext(AuthContext);
 
-    if (hasPermission === null) {
-        return <View />;
-    }
-    if (hasPermission === false) {
-        return <Text>No access to camera</Text>;
-    }
+    // if (hasPermission === null) {
+    //     return <View />;
+    // }
+    // if (hasPermission === false) {
+    //     return <Text>No access to camera</Text>;
+    // }
 
     function handleSubmit() {
         Keyboard.dismiss();
