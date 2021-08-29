@@ -25,8 +25,6 @@ export function Income() {
     const uid = userContext && userContext.uid;
 
     useEffect(() => {
-        
-
         async function loadCategories() {
 
             await firebase
@@ -39,7 +37,7 @@ export function Income() {
 
                     snapshot.forEach(childItem => {
                         if (childItem.val().tipo == 'receita') {
-                            list.push(childItem.val().nome)
+                            list.push(childItem.key)
                         }
                     });
 

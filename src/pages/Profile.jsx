@@ -21,7 +21,6 @@ export function Profile() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    console.log(user)
 
     function handleLogout() {
         signOut();

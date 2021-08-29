@@ -10,6 +10,7 @@ import {
     TouchableWithoutFeedback,
     Platform,
     Keyboard,
+    ActivityIndicator
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import colors from "../styles/colors";
@@ -21,24 +22,24 @@ import { Button } from '../components/Button';
 import { useNavigation } from "@react-navigation/core";
 import { HeaderBack } from "../components/HeaderBack";
 
-import * as LocalAuthentication from 'expo-local-authentication';
+// import * as LocalAuthentication from 'expo-local-authentication';
 
 export function Login() {
-    const [email, setEmail] = useState('carol@gmail.com');
-    const [password, setPassword] = useState('carol123');
+    const [email, setEmail] = useState('joana@gmail.com');
+    const [password, setPassword] = useState('joana123');
 
-    const [isBiometricSupported, setIsBiometricSupported] = useState(false);
+    // const [isBiometricSupported, setIsBiometricSupported] = useState(false);
 
     const navigation = useNavigation();
 
     const { signIn, loadingAuth } = useContext(AuthContext);
 
-    useEffect(() => {
-        (async () => {
-            const compatible = await LocalAuthentication.hasHardwareAsync();
-            setIsBiometricSupported(compatible);
-        })();
-    });
+    // useEffect(() => {
+    //     (async () => {
+    //         const compatible = await LocalAuthentication.hasHardwareAsync();
+    //         setIsBiometricSupported(compatible);
+    //     })();
+    // });
 
     function handleLogin() {
         signIn(email, password);
@@ -65,12 +66,18 @@ export function Login() {
                             secureTextEntry={true}
                             value={password}
                             onChangeText={text => setPassword(text)} />
-                        <Button title="Entrar" onPress={handleLogin} btnStyle={styles.btnStyle2} txtStyle={styles.txtStyle2} />
+                        <Button title={
+                                loadingAuth ? (
+                                    <ActivityIndicator size={24} color="#fff" />
+                                ) : (
+                                    'Entrar'
+                                )
+                            } onPress={handleLogin} btnStyle={styles.btnStyle2} txtStyle={styles.txtStyle2} />
                         <Button title="Ainda não tem uma conta? Cadastre-se!" onPress={handleSignUp} btnStyle={styles.btnStyle1} txtStyle={styles.txtStyle1} />
-                        {!isBiometricSupported &&
+                        {/* {!isBiometricSupported &&
                             <TouchableOpacity style={styles.fingerprint}>
                                 <MaterialIcons name="fingerprint" size={60} />
-                            </TouchableOpacity>}
+                            </TouchableOpacity>} */}
                     </View>
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, Children } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
     Text,
     View,
@@ -50,16 +50,17 @@ export function Home() {
                 .limitToLast(4)
                 .on('value', snapshot => {
                     setHistorico([]);
+                    let list = [];
 
                     snapshot.forEach(childItem => {
-                        let list = {
+                        list.unshift({
                             key: childItem.key,
                             tipo: childItem.val().tipo,
                             valor: childItem.val().valor,
-                        };
-
-                        setHistorico(oldArray => [...oldArray, list].reverse());
+                        });
                     });
+
+                    setHistorico(list);
                 });
 
             await firebase

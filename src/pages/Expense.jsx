@@ -5,10 +5,12 @@ import {
     StyleSheet,
     Keyboard,
     TouchableWithoutFeedback,
+    TouchableOpacity,
     Alert,
     TextInput,
     View,
-    Dimensions
+    Dimensions,
+    Modal
 } from "react-native";
 import { AuthContext } from '../contexts/auth';
 import { useNavigation } from '@react-navigation/native';
@@ -16,16 +18,13 @@ import { format } from 'date-fns';
 import { Camera } from 'expo-camera';
 import { Picker } from '@react-native-picker/picker';
 import firebase from '../services/firebaseConnection';
+import { HeaderBack } from "../components/HeaderBack";
 
-import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
+import Feather from "react-native-vector-icons/Feather";
+import { BarCodeScanner } from 'expo-barcode-scanner';
 import BarcodeMask from 'react-native-barcode-mask';
+import colors from "../styles/colors";
 
-const finderWidth = 280;
-const finderHeight = 230;
-const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
-const viewMinX = (width - finderWidth) / 2;
-const viewMinY = (height - finderHeight) / 2;
 
 export function Expense() {
     const [hasPermission, setHasPermission] = useState(null);
@@ -34,24 +33,32 @@ export function Expense() {
     const [desc, setDesc] = useState('');
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const navigation = useNavigation();
+    const { user: userContext } = useContext(AuthContext);
+
+    const uid = userContext && userContext.uid;
 
     const handleBarCodeScanned = (scanningResult) => {
         if (!scanned) {
-            const { type, data, bounds: { origin } = {} } = scanningResult;
-            const { x, y } = origin;
-            if (x >= viewMinX && y >= viewMinY && x <= (viewMinX + finderWidth / 2) && y <= (viewMinY + finderHeight / 2)) {
-                setScanned(true);
-                alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-                console.log(data)
+            const { data } = scanningResult;
+            alert(data);
+            let valueNFC = data.split("|")
+
+            if (((typeof (+valueNFC[4])) == 'number') && !(isNaN(+valueNFC[4]))) {
+                setValor(valueNFC[4]);
             }
+            setModalVisible(false);
+            console.log(valor)
         }
     };
 
     useEffect(() => {
-        // (async () => {
-        //     const { status } = await Camera.requestPermissionsAsync();
-        //     setHasPermission(status === 'granted');
-        // })();
+        (async () => {
+            const { status } = await Camera.requestPermissionsAsync();
+            setHasPermission(status === 'granted');
+        })();
 
         async function loadCategories() {
 
@@ -64,9 +71,8 @@ export function Expense() {
                     let list = [];
 
                     snapshot.forEach(childItem => {
-                        console.log(childItem)
                         if (childItem.val().tipo == 'despesa') {
-                            list.push(childItem.val().nome)
+                            list.push(childItem.key)
                         }
                     });
 
@@ -78,15 +84,12 @@ export function Expense() {
 
     }, []);
 
-    const navigation = useNavigation();
-    const { user: userContext } = useContext(AuthContext);
-
-    // if (hasPermission === null) {
-    //     return <View />;
-    // }
-    // if (hasPermission === false) {
-    //     return <Text>No access to camera</Text>;
-    // }
+    if (hasPermission === null) {
+        return <View />;
+    }
+    if (hasPermission === false) {
+        return <Text>No access to camera</Text>;
+    }
 
     function handleSubmit() {
         Keyboard.dismiss();
@@ -141,43 +144,73 @@ export function Expense() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Text>Expense</Text>
-            <TextInput
-                placeholder="Valor desejado"
-                keyboardType="numeric"
-                returnKeyType="next"
-                onSubmitEditing={() => Keyboard.dismiss()}
-                value={valor}
-                onChangeText={text => setValor(text)}
-            />
-            <TextInput
-                placeholder="Descrição"
-                returnKeyType="next"
-                onSubmitEditing={() => Keyboard.dismiss()}
-                value={desc}
-                onChangeText={text => setDesc(text)}
-            />
-            <Picker
-                selectedValue={selectedCategory}
-                onValueChange={item =>
-                    setSelectedCategory(item)
-                }>
+            <HeaderBack />
+            <View style={styles.innerContainer}>
+                <Modal
+                    animationType="fade"
+                    statusBarTranslucent={true}
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                        setModalVisible(!modalVisible);
+                    }}
+                >
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+                            <View style={{ position: 'relative', width: '100%' }}>
+                                <Text style={{ textAlign: 'center' }}>Scanner</Text>
+                                <TouchableOpacity
+                                    style={{ position: 'absolute', right: 0, top: 0 }}
+                                    onPress={() => setModalContent(!modalContent)}
+                                >
+                                    <Feather name="x" size={24} />
+                                </TouchableOpacity>
+                            </View>
+                            <BarCodeScanner onBarCodeScanned={handleBarCodeScanned}
+                                type={BarCodeScanner.Constants.Type.back}
+                                barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+                                style={[StyleSheet.absoluteFillObject, styles.scanner]}>
+                                <BarcodeMask edgeColor="#62B1F6" showAnimatedLine />
+                            </BarCodeScanner>
+                        </View>
+                    </View>
+                </Modal>
+                <Text>Expense</Text>
+                <TextInput
+                    placeholder="Valor desejado"
+                    keyboardType="numeric"
+                    returnKeyType="next"
+                    type="number"
+                    onSubmitEditing={() => Keyboard.dismiss()}
+                    value={valor}
+                    onChangeText={text => setValor(text)}
+                />
+                <TouchableOpacity onPress={() => {setScanned(false); setModalVisible(true)}} style={{ backgroundColor: 'rgba(236, 139, 94, .6)', paddingHorizontal: 25, paddingVertical: 15, borderRadius: 50 }}>
+                    <Text style={{ color: colors.white, fontWeight: 'bold', letterSpacing: .5, fontSize: 15 }}>Ler qr code</Text>
+                </TouchableOpacity>
+                <TextInput
+                    placeholder="Descrição"
+                    returnKeyType="next"
+                    onSubmitEditing={() => Keyboard.dismiss()}
+                    value={desc}
+                    onChangeText={text => setDesc(text)}
+                />
+                <Picker
+                    selectedValue={selectedCategory}
+                    onValueChange={item =>
+                        setSelectedCategory(item)
+                    }>
                     <Picker.Item label='Categoria' value='' />
-                {
-                    categories.map(category => 
-                        <Picker.Item key={category} label={category} value={category} />
-                    )
-                }
-            </Picker>
-            <TouchableWithoutFeedback onPress={handleSubmit}>
-                <Text>Registrar</Text>
-            </TouchableWithoutFeedback>
-            {/* <BarCodeScanner onBarCodeScanned={handleBarCodeScanned}
-                            type={BarCodeScanner.Constants.Type.back}
-                            barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-                            style={[StyleSheet.absoluteFillObject, styles.container]}>
-                <BarcodeMask edgeColor="#62B1F6" showAnimatedLine/>
-            </BarCodeScanner> */}
+                    {
+                        categories.map(category =>
+                            <Picker.Item key={category} label={category} value={category} />
+                        )
+                    }
+                </Picker>
+                <TouchableWithoutFeedback onPress={handleSubmit}>
+                    <Text>Registrar</Text>
+                </TouchableWithoutFeedback>
+            </View>
         </SafeAreaView >
     );
 }
@@ -186,7 +219,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        marginHorizontal: 30
+    },
+    innerContainer: {
+        flex: 1,
+        marginHorizontal: 20
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22,
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
     },
     camera: {
         height: Dimensions.get("window").width * 0.8,
@@ -197,6 +240,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         margin: 20,
     },
+    scanner: {
+        marginTop: 60,
+        backgroundColor: 'rgba(0, 0, 0, .4)'
+    },
     button: {
         flex: 0.1,
         alignSelf: 'flex-end',
@@ -206,6 +253,24 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'white',
     },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 20,
+        width: '90%',
+        height: '60%',
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+
 });
 
 export default Expense;

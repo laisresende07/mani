@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import {
     Text,
     SafeAreaView,
@@ -15,60 +15,11 @@ import { parseString } from "react-native-xml2js";
 import { MainHeader } from "../components/MainHeader";
 import colors from "../styles/colors";
 
+import { AuthContext } from '../contexts/auth'
+
 export function News() {
-    const [tempNews, setTempNews] = useState();
-    const [noticias, setNoticias] = useState();
-    const [loading, setLoading] = useState(true);
 
-    const regex = /<p>(.*?)<\/p>/;
-
-    useEffect(() => {
-        function loadNews() {
-            setLoading(true);
-            axios.get('https://www.mobills.com.br/blog/feed/?barra=esconder')
-                .then(response => {
-                    let list = [];
-                    parseString(response.data, function (err, result) {
-                        Object.entries(result.rss.channel[0]).map(([item, value]) => {
-                            if (item == 'item') {
-                                Object.entries(value).map(([item2, value2]) => {
-                                    list.push(value2)
-                                })
-                            }
-                        });
-                        setTempNews(list);
-                    });
-                })
-                .then(() => {
-                    const noticia = [];
-                    tempNews && tempNews.forEach((item, index) => {
-                        const corresp = regex.exec(item.description[0]);
-                        const firstParagraphWithoutHtml = (corresp) ? corresp[1] : "";
-
-                        const temp = {
-                            id: index,
-                            title: item.title[0],
-                            description: firstParagraphWithoutHtml,
-                            link: item.link[0]
-                        }
-
-                        noticia.push(temp)
-                    })
-
-                    setNoticias(noticia);
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
-        }
-
-        loadNews();
-        setLoading(false);
-    }, [])
-
-    useEffect(() => {
-        console.log(loading)
-    }, [loading])
+    const { noticias } = useContext(AuthContext);
 
     const OpenURLButton = ({ url, children }) => {
         const handlePress = useCallback(async () => {
@@ -97,7 +48,6 @@ export function News() {
                 <FlatList
                     showsVerticalScrollIndicator={false}
                     data={noticias}
-                    extraData={loading}
                     keyExtractor={item => item.id.toString()}
                     renderItem={({ item }) => (
                         <View style={{ marginBottom: 30, borderWidth: 1, borderColor: colors.orange, borderRadius: 5, padding: 15, paddingBottom: 30 }}>

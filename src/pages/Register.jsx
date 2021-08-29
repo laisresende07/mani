@@ -57,14 +57,13 @@ export function Register() {
                             value={password}
                             onChangeText={text => setPassword(text)}
                         />
-                        {/* <TouchableOpacity onPress={handleSignUp}>
-                            {loadingAuth ? (
-                                <ActivityIndicator size={20} color="#fff" />
-                            ) : (
-                                <Text>Criar conta</Text>
-                            )}
-                        </TouchableOpacity> */}
-                        <Button title="Criar conta" onPress={handleSignUp} btnStyle={styles.btnStyle2} txtStyle={styles.txtStyle2} />
+                        <Button title={
+                                loadingAuth ? (
+                                    <ActivityIndicator size={24} color="#fff" />
+                                ) : (
+                                    'Criar conta'
+                                )
+                            } onPress={handleSignUp} btnStyle={styles.btnStyle2} txtStyle={styles.txtStyle2} />
                         <Button title="Já tem uma conta? Faça login!" onPress={handleLogin} btnStyle={styles.btnStyle1} txtStyle={styles.txtStyle1} />
                     </View>
                 </TouchableWithoutFeedback>
