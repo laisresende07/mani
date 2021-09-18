@@ -1,11 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
     Text,
     SafeAreaView,
     StyleSheet,
     TouchableOpacity,
     View,
-    TextInput
 } from "react-native";
 import { Button } from "../components/Button";
 import { HeaderBack } from "../components/HeaderBack";
@@ -13,56 +12,56 @@ import { AuthContext } from '../contexts/auth';
 import colors from "../styles/colors";
 import fonts from "../styles/fonts";
 import firebase from '../services/firebaseConnection';
+import { useNavigation } from "@react-navigation/core";
+import { MaterialIcons } from "@expo/vector-icons";
 
-export function Profile() {
+export function Profile({ route }) {
+    const navigation = useNavigation();
     const { signOut } = useContext(AuthContext);
-    const user = firebase.auth().currentUser;
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+
+    useEffect(() => {
+        const focus = navigation.addListener('focus', () => {
+            const user = firebase.auth().currentUser;
+
+            setName(user.displayName);
+            setEmail(user.email)
+        });
+        return focus;
+    }, [navigation]);
 
 
     function handleLogout() {
         signOut();
     }
 
-    function handleUpdate() {
-        if(user){
-            user.updateProfile({
-                displayName: name
-            }).catch((error) => {
-                console.log(error)
-            });
-    
-            user.updateEmail(email)
-                .catch((error) => {
-                    console.log(error)
-                });
-    
-            user.updatePassword(password).catch((error) => {
-                console.log(error)
-            });
-        }
-        setEmail('');
-        setPassword('');
-        setName('');
+    function handleEditProfile() {
+        navigation.navigate('EditProfile')
     }
 
     return (
         <SafeAreaView style={styles.container}>
             <HeaderBack title="Seu perfil" />
             <View style={styles.innerContainer}>
-                <Text>Profile</Text>
-                <TextInput style={styles.input} placeholder="Nome"
-                    value={name}
-                    onChangeText={text => setName(text)} />
-                <TextInput style={styles.input} placeholder="Email"
-                    value={email}
-                    onChangeText={text => setEmail(text)} />
-                <TextInput style={styles.input} placeholder="Senha"
-                    value={password}
-                    onChangeText={text => setPassword(text)} />
-                <Button title="Salvar" onPress={handleUpdate} btnStyle={styles.btnSair} txtStyle={styles.txtSair} />
+                <View style={styles.row}>
+                    <Text style={styles.name}>Olá, </Text>
+                    <Text style={[styles.name, styles.bold]}>{route.params?.novoNome ? route.params?.novoNome : name}</Text>
+                </View>
+
+                <View>
+                    <View style={styles.dadosView}>
+                        <Text style={styles.dados}>Dados pessoais</Text>
+                        <TouchableOpacity onPress={handleEditProfile}>
+                            <MaterialIcons name='edit' size={22} color={colors.orange} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.card}>
+                        <Text style={styles.cardTxt}>{route.params?.novoNome ? route.params?.novoNome : name}</Text>
+                        <Text style={styles.cardTxt}>{route.params?.novoEmail ? route.params?.novoEmail : email}</Text>
+                    </View>
+                </View>
+
                 <Button title="Sair" onPress={handleLogout} btnStyle={styles.btnSair} txtStyle={styles.txtSair} />
             </View>
         </SafeAreaView >
@@ -72,11 +71,28 @@ export function Profile() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        justifyContent: 'center',
     },
     innerContainer: {
         flex: 1,
-        justifyContent: 'center',
         marginHorizontal: 20,
+    },
+    card: {
+        padding: 20,
+        borderRadius: 6,
+        backgroundColor: colors.white,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+        elevation: 3,
+    },
+    cardTxt: {
+        fontFamily: fonts.regular,
+        fontSize: 17,
     },
     btnSair: {
         backgroundColor: colors.orange,
@@ -89,16 +105,31 @@ const styles = StyleSheet.create({
         fontFamily: fonts.regular,
         fontSize: 18
     },
-    input: {
-        borderWidth: 1,
-        borderColor: colors.gray,
-        height: 50,
-        width: '100%',
-        borderRadius: 6,
-        paddingHorizontal: 20,
-        marginVertical: 10,
-        fontSize: 16
+    row: {
+        flexDirection: 'row',
+        marginTop: 80
     },
+    dadosView: {
+        flexDirection: 'row',
+        marginTop: 40,
+        justifyContent: 'space-between',
+        marginBottom: 5
+    },
+    name: {
+        fontSize: 20,
+        color: colors.blue,
+        letterSpacing: .7,
+        fontFamily: fonts.regular
+    },
+    bold: {
+        fontFamily: fonts.semibold
+    },
+    dados: {
+        fontSize: 15,
+        color: colors.orange,
+        fontFamily: fonts.semibold,
+        textTransform: 'uppercase'
+    }
 });
 
 export default Profile;

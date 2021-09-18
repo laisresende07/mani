@@ -14,7 +14,7 @@ import {
 import colors from "../styles/colors";
 import fonts from "../styles/fonts";
 
-import {AuthContext} from "../contexts/auth";
+import { AuthContext } from "../contexts/auth";
 
 import { Button } from '../components/Button';
 import { useNavigation } from "@react-navigation/core";
@@ -24,12 +24,13 @@ export function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
-    const {signUp, loadingAuth } = useContext(AuthContext);
-    
+    const [lastName, setLastName] = useState('');
+    const { signUp, loadingAuth } = useContext(AuthContext);
+
     const navigation = useNavigation();
 
     function handleSignUp() {
-        signUp(name, email, password);
+        signUp(name, lastName, email, password);
     }
 
     function handleLogin() {
@@ -48,22 +49,27 @@ export function Register() {
                         <TextInput style={styles.input} placeholder="Nome"
                             value={name}
                             onChangeText={text => setName(text)} />
+                        <TextInput style={styles.input} placeholder="Sobrenome"
+                            value={lastName}
+                            onChangeText={text => setLastName(text)} />
                         <TextInput style={styles.input} placeholder="Email"
-                        keyboardType="email-address"
+                            keyboardType="email-address"
+                            autoCapitalize="none"
                             value={email}
                             onChangeText={text => setEmail(text)} />
                         <TextInput style={styles.input} placeholder="Senha"
                             secureTextEntry={true}
+                            autoCapitalize="none"
                             value={password}
                             onChangeText={text => setPassword(text)}
                         />
                         <Button title={
-                                loadingAuth ? (
-                                    <ActivityIndicator size={24} color="#fff" />
-                                ) : (
-                                    'Criar conta'
-                                )
-                            } onPress={handleSignUp} btnStyle={styles.btnStyle2} txtStyle={styles.txtStyle2} />
+                            loadingAuth ? (
+                                <ActivityIndicator size={24} color="#fff" />
+                            ) : (
+                                'Criar conta'
+                            )
+                        } onPress={handleSignUp} btnStyle={styles.btnStyle2} txtStyle={styles.txtStyle2} />
                         <Button title="Já tem uma conta? Faça login!" onPress={handleLogin} btnStyle={styles.btnStyle1} txtStyle={styles.txtStyle1} />
                     </View>
                 </TouchableWithoutFeedback>

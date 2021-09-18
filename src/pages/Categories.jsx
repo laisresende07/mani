@@ -14,14 +14,12 @@ import { MainHeader } from '../components/MainHeader';
 
 import firebase from '../services/firebaseConnection';
 import { AuthContext } from '../contexts/auth';
-
-import { useNavigation } from "@react-navigation/core";
-import Feather from "react-native-vector-icons/Feather";
+import { MaterialIcons, Feather } from "@expo/vector-icons";
 import colors from "../styles/colors";
+import fonts from "../styles/fonts";
+import { HistoricoList } from "../components/HistoricoList";
 
 export function Categories() {
-    const navigation = useNavigation();
-
     const { user } = useContext(AuthContext);
     const uid = user && user.uid;
 
@@ -82,15 +80,15 @@ export function Categories() {
 
     function confirmDelete(item) {
         Alert.alert(
-            'Confirmando dados',
-            `Tem certeza que quer deletar a categoria ${item}?`,
+            '',
+            `Deletar categoria ${item}?`,
             [
                 {
-                    text: 'Cancelar',
+                    text: 'Não',
                     style: 'cancel'
                 },
                 {
-                    text: 'Continuar',
+                    text: 'Sim',
                     onPress: () => deleteCategory(item)
                 }
             ]
@@ -125,13 +123,15 @@ export function Categories() {
                 snapshot.forEach(childItem => {
                     list.push({
                         key: childItem.key,
-                        descricao: childItem.val().descricao,
-                        date: childItem.val().date,
+                        tipo: childItem.val().tipo,
                         valor: childItem.val().valor,
+                        data: childItem.val().date,
+                        date: childItem.val().date,
+                        descricao: childItem.val().descricao,
+                        categoria: childItem.val().categoria
                     });
 
                     setCategoryContent(list);
-                    // console.log(list)
                 });
             });
 
@@ -158,19 +158,23 @@ export function Categories() {
                             <TextInput
                                 placeholder="Nome da categoria"
                                 value={category}
-                                onChangeText={text => setCategory(text)} />
+                                onChangeText={text => setCategory(text)}
+                                style={styles.input} />
                             <View style={{ display: 'flex', flexDirection: 'row' }}>
                                 <TouchableOpacity
                                     style={[styles.button, styles.buttonClose]}
-                                    onPress={() => setModalVisible(!modalVisible)}
+                                    onPress={() => {
+                                        setModalVisible(!modalVisible);
+                                        setCategory('')
+                                    }}
                                 >
-                                    <Text style={styles.textStyle}>Cancelar</Text>
+                                    <Text style={styles.textClose}>Cancelar</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    style={[styles.button, styles.buttonClose]}
+                                    style={[styles.button, styles.buttonOpen]}
                                     onPress={() => handleAddCategory()}
                                 >
-                                    <Text style={styles.textStyle}>Adicionar</Text>
+                                    <Text style={styles.textOpen}>Adicionar</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -187,89 +191,64 @@ export function Categories() {
                 >
                     <View style={styles.centeredView}>
                         <View style={styles.modalView2}>
-                            <View style={{position: 'relative', width: '100%'}}>
-                                <Text style={{ textAlign: 'center'}}>{selectedCategory}</Text>
+                            <View style={{ position: 'relative', width: '100%', marginBottom: 15 }}>
+                                <Text style={styles.selectedCategoryTitle}>{selectedCategory}</Text>
                                 <TouchableOpacity
-                                    style={{position: 'absolute', right: 0, top: 0}}
+                                    style={{ position: 'absolute', right: 0, top: 0 }}
                                     onPress={() => setModalContent(!modalContent)}
                                 >
-                                    <Feather name="x" size={24} />
+                                    <Feather name="x" size={24} color={colors.blue} />
                                 </TouchableOpacity>
                             </View>
                             {
                                 categoryContent.length > 0 ?
                                     <FlatList
+                                        style={styles.list}
                                         showsVerticalScrollIndicator={false}
                                         data={categoryContent}
-                                        renderItem={({ item }) => (
-                                            <View style={{ display: 'flex', flexDirection: 'row', marginBottom: 10, justifyContent: 'space-between', width: '70%' }}>
-                                                <Text>{item.valor}</Text>
-                                                <Text>{item.descricao}</Text>
-                                                <Text>{item.date}</Text>
-                                                {/* {console.log((item.date).slice(-5, -3))}      mes */}
-                                                {/* {console.log((item.date).slice(-2))}      ano */}
-                                            </View>
-                                        )}
-                                    /> :
-                                    <Text style={{ flex: 1 }}>Sem registros</Text>
+                                        keyExtractor={item => item.key}
+                                        renderItem={({ item }) => <HistoricoList data={item} showDate={true} />}
+                                    />
+                                    :
+                                    <View style={styles.empty}>
+                                        <Text style={styles.simpleText}>Sem movimentações nesta categoria.</Text>
+                                    </View>
                             }
                         </View>
                     </View>
                 </Modal>
+                <Text style={styles.title}>Categorias</Text>
                 <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', marginBottom: 20 }}>
-                    <TouchableOpacity onPress={() => setMode('receita')}>
-                        <Text>Receita</Text>
+                    <TouchableOpacity onPress={() => setMode('receita')} style={mode == 'receita' ? [styles.buttonsHeader, styles.buttonsHeaderIncomeActive] : styles.buttonsHeader}>
+                        <MaterialIcons name="north-east" size={20} color={colors.green} />
+                        <Text style={mode == 'receita' ? [styles.textButtonsHeader, styles.textButtonsHeaderActive] : styles.textButtonsHeader}>Receita</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => setMode('despesa')}>
-                        <Text>Despesa</Text>
+                    <TouchableOpacity onPress={() => setMode('despesa')} style={mode == 'despesa' ? [styles.buttonsHeader, styles.buttonsHeaderExpenseActive] : styles.buttonsHeader}>
+                        <MaterialIcons name="south-west" size={20} color={colors.red} />
+                        <Text style={mode == 'despesa' ? [styles.textButtonsHeader, styles.textButtonsHeaderActive] : styles.textButtonsHeader}>Despesa</Text>
                     </TouchableOpacity>
                 </View>
-                {
-                    (mode == 'receita') ?
-                        <View style={{ flex: 1 }}>
-                            <Text>RECEITA</Text>
-                            <FlatList
-                                showsVerticalScrollIndicator={false}
-                                data={incomeCategories}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity onPress={() => getCategoryContent(item)} style={{ marginBottom: 30, borderWidth: 1, borderRadius: 5, padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <Text>{item}</Text>
-                                        <TouchableOpacity onPress={() => confirmDelete(item)}>
-                                            <Feather name="trash-2" size={20} />
-                                        </TouchableOpacity>
-                                    </TouchableOpacity>
-                                )}
-                            />
+                <View style={{ flex: 1 }}>
+                    <FlatList
+                        showsVerticalScrollIndicator={false}
+                        data={mode == 'receita' ? incomeCategories : expenseCategories}
+                        renderItem={({ item }) => (
+                            <TouchableOpacity onPress={() => getCategoryContent(item)} style={{ marginBottom: 15, borderWidth: .5, borderColor: colors.blue, borderRadius: 5, padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Text style={styles.categoryItem}>{item}</Text>
+                                <TouchableOpacity onPress={() => confirmDelete(item)}>
+                                    <Feather name="x" size={20} color={colors.blue} />
+                                </TouchableOpacity>
+                            </TouchableOpacity>
+                        )}
+                    />
 
-                            <View style={{ position: 'absolute', bottom: 10, paddingVertical: 20, width: '100%', display: 'flex', alignItems: 'flex-end' }}>
-                                <TouchableOpacity onPress={() => setModalVisible(true)} style={{ backgroundColor: colors.green, paddingHorizontal: 25, paddingVertical: 15, borderRadius: 50 }}>
-                                    <Text style={{ color: colors.white, fontWeight: 'bold', letterSpacing: .5, fontSize: 15 }}>Adicionar categoria</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                        :
-                        <View style={{ flex: 1 }}>
-                            <Text>DESPESA</Text>
-                            <FlatList
-                                showsVerticalScrollIndicator={false}
-                                data={expenseCategories}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity onPress={() => getCategoryContent(item)} style={{ marginBottom: 30, borderWidth: 1, borderRadius: 5, padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <Text>{item}</Text>
-                                        <TouchableOpacity onPress={() => confirmDelete(item)}>
-                                            <Feather name="trash-2" size={20} />
-                                        </TouchableOpacity>
-                                    </TouchableOpacity>
-                                )}
-                            />
-                            <View style={{ position: 'absolute', bottom: 10, paddingVertical: 20, width: '100%', display: 'flex', alignItems: 'flex-end' }}>
-                                <TouchableOpacity onPress={() => setModalVisible(true)} style={{ backgroundColor: colors.red, paddingHorizontal: 25, paddingVertical: 15, borderRadius: 50 }}>
-                                    <Text style={{ color: colors.white, fontWeight: 'bold', letterSpacing: .5, fontSize: 15 }}>Adicionar categoria</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                }
+                    <View style={{ position: 'absolute', bottom: 10, paddingVertical: 20, width: '100%', display: 'flex', alignItems: 'flex-end' }}>
+                        <TouchableOpacity onPress={() => setModalVisible(true)} style={mode == 'receita' ? styles.addIncomeCategory : styles.addExpenseCategory}>
+                            <Text style={styles.textAddCategory}>Adicionar categoria</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
             </View>
         </SafeAreaView >
     );
@@ -289,7 +268,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginTop: 22,
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
     },
     modalView: {
         margin: 20,
@@ -324,25 +303,125 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5
     },
+    list: {
+        width: '100%'
+    },
     button: {
         borderRadius: 20,
         padding: 10,
-        elevation: 2
+        flex: 1,
     },
     buttonOpen: {
-        backgroundColor: "#F194FF",
+        borderWidth: 1,
+        borderColor: colors.green,
+        backgroundColor: colors.green,
+        marginLeft: 10
     },
     buttonClose: {
-        backgroundColor: "#2196F3",
+        borderWidth: 1,
+        borderColor: colors.red,
+        backgroundColor: colors.white,
+        marginRight: 10
     },
-    textStyle: {
+    textOpen: {
         color: "white",
-        fontWeight: "bold",
-        textAlign: "center"
+        fontSize: 15,
+        textTransform: "uppercase",
+        letterSpacing: .5,
+        textAlign: "center",
+        fontFamily: fonts.regular
+    },
+    textClose: {
+        color: colors.red,
+        fontSize: 15,
+        textTransform: "uppercase",
+        letterSpacing: .5,
+        textAlign: "center",
+        fontFamily: fonts.regular
     },
     modalText: {
         marginBottom: 15,
-        textAlign: "center"
+        textAlign: "center",
+        fontSize: 16,
+        fontFamily: fonts.semibold
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: colors.gray,
+        height: 50,
+        width: '100%',
+        borderRadius: 6,
+        paddingHorizontal: 20,
+        marginBottom: 20,
+        fontSize: 16,
+        fontFamily: fonts.regular
+    },
+    buttonsHeader: {
+        flexDirection: 'row',
+        borderWidth: 2,
+        borderColor: "rgba(0, 0, 0, 0.1)",
+        width: 122,
+        height: 38,
+        alignItems: 'center',
+        borderRadius: 50,
+        padding: 12
+    },
+    buttonsHeaderIncomeActive: {
+        borderColor: colors.green
+    },
+    buttonsHeaderExpenseActive: {
+        borderColor: colors.red
+    },
+    textButtonsHeader: {
+        fontSize: 16,
+        marginLeft: 8,
+        fontFamily: fonts.regular
+    },
+    textButtonsHeaderActive: {
+        fontFamily: fonts.semibold
+    },
+    title: {
+        fontSize: 20,
+        textAlign: "center",
+        color: colors.orange,
+        fontFamily: fonts.semibold,
+        textTransform: 'uppercase',
+        letterSpacing: .7,
+        marginBottom: 15
+    },
+    addIncomeCategory: {
+        backgroundColor: colors.green,
+        paddingHorizontal: 25,
+        paddingVertical: 15,
+        borderRadius: 50
+    },
+    addExpenseCategory: {
+        backgroundColor: colors.red,
+        paddingHorizontal: 25,
+        paddingVertical: 15,
+        borderRadius: 50
+    },
+    textAddCategory: {
+        color: colors.white,
+        fontFamily: fonts.semibold,
+        letterSpacing: .5,
+        fontSize: 15
+    },
+    selectedCategoryTitle: {
+        textAlign: 'center',
+        color: colors.blue,
+        textTransform: 'uppercase',
+        fontSize: 18,
+        letterSpacing: .7,
+        fontFamily: fonts.regular
+    },
+    empty: {
+        fontFamily: fonts.regular,
+        fontSize: 16
+    },
+    categoryItem: {
+        fontFamily: fonts.regular,
+        fontSize: 16
     }
 });
 

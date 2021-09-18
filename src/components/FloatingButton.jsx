@@ -1,47 +1,100 @@
-import React, {useState} from "react";
-import { StyleSheet, TouchableWithoutFeedback, Animated, View } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, TouchableWithoutFeedback, Animated, View, Text } from "react-native";
 
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import colors from "../styles/colors";
 import { useNavigation } from "@react-navigation/core";
+import fonts from "../styles/fonts";
 
 export function FloatingButton() {
     const [active, setActive] = useState(false);
+    const [animation] = useState(new Animated.Value(0))
 
     const navigation = useNavigation();
 
-    function handleButtons(){
+
+    function handleButtons() {
+        var toValue = active ? 0 : 1
+
+        Animated.spring(animation, {
+            toValue: toValue,
+            friction: 5
+        }).start()
+
         setActive(!active)
     }
 
-    function addIncome(){
-        navigation.navigate('Nova receita')
+    function addIncome() {
         setActive(false)
+        navigation.navigate('Nova receita')
     }
 
-    function addExpense(){
-        navigation.navigate('Nova despesa')
+    function addExpense() {
         setActive(false)
+        navigation.navigate('Nova despesa')
+    }
+
+    const rotation = {
+        transform: [
+            {
+                rotate: animation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ["0deg", "45deg"]
+                })
+            }
+        ]
+    }
+
+    const incomeStyle = {
+        transform: [
+            { scale: animation },
+            {
+                translateY: animation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -130]
+                })
+            }
+        ]
+    }
+
+    const expenseStyle = {
+        transform: [
+            { scale: animation },
+            {
+                translateY: animation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -70]
+                })
+            }
+        ]
     }
 
     return (
         <View style={styles.container}>
+            <Animated.View style={[styles.label, incomeStyle]}>
+                <Text style={styles.text}>Nova receita</Text>
+            </Animated.View>
+
             <TouchableWithoutFeedback onPress={addIncome}>
-                <Animated.View style={[styles.button, styles.secondary, active?styles.top:'']}>
+                <Animated.View style={[styles.button, styles.secondary, incomeStyle]}>
                     <MaterialIcons name="north-east" size={24} color={colors.green} />
                 </Animated.View>
-            </TouchableWithoutFeedback> 
+            </TouchableWithoutFeedback>
+            
+            <Animated.View style={[styles.label, expenseStyle]}>
+                <Text style={styles.text}>Nova despesa</Text>
+            </Animated.View>
 
             <TouchableWithoutFeedback onPress={addExpense}>
-                <Animated.View style={[styles.button, styles.secondary, active?styles.bottom:'']}>
+                <Animated.View style={[styles.button, styles.secondary, expenseStyle]}>
                     <MaterialIcons name="south-west" size={24} color={colors.red} />
                 </Animated.View>
             </TouchableWithoutFeedback>
 
             <TouchableWithoutFeedback onPress={handleButtons}>
-                <Animated.View style={[styles.button, styles.main, active?styles.rotate:'']}>
+                <Animated.View style={[styles.button, styles.main, rotation]}>
                     <AntDesign name={"plus"} size={24} color="#fff" />
-                </Animated.View> 
+                </Animated.View>
             </TouchableWithoutFeedback>
         </View>
     );
@@ -52,7 +105,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         position: "absolute",
         bottom: 80,
-        right: 25
+        right: 25,
     },
     button: {
         position: "absolute",
@@ -76,14 +129,17 @@ const styles = StyleSheet.create({
         borderRadius: 48 / 2,
         backgroundColor: colors.white,
     },
-    bottom: {
-        bottom: 15,
+    label: {
+        position: "absolute",
+        right: 40,
+        height: 48,
+        alignItems: "center",
+        justifyContent: "center",
     },
-    top: {
-        bottom: 72
-    },
-    rotate: {
-        transform: [{ rotate: "45deg" }]
+    text: {
+        fontFamily: fonts.regular,
+        fontSize: 16,
+        color: colors.blue,
     }
 });
 

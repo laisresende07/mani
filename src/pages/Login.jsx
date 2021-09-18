@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
     Text,
     View,
@@ -22,24 +22,14 @@ import { Button } from '../components/Button';
 import { useNavigation } from "@react-navigation/core";
 import { HeaderBack } from "../components/HeaderBack";
 
-// import * as LocalAuthentication from 'expo-local-authentication';
 
 export function Login() {
-    const [email, setEmail] = useState('joana@gmail.com');
-    const [password, setPassword] = useState('joana123');
-
-    // const [isBiometricSupported, setIsBiometricSupported] = useState(false);
+    const [email, setEmail] = useState('lais@gmail.com');
+    const [password, setPassword] = useState('lais123');
 
     const navigation = useNavigation();
 
     const { signIn, loadingAuth } = useContext(AuthContext);
-
-    // useEffect(() => {
-    //     (async () => {
-    //         const compatible = await LocalAuthentication.hasHardwareAsync();
-    //         setIsBiometricSupported(compatible);
-    //     })();
-    // });
 
     function handleLogin() {
         signIn(email, password);
@@ -60,24 +50,22 @@ export function Login() {
                         </Text>
                         <TextInput style={styles.input} placeholder="Digite seu email"
                             keyboardType="email-address"
+                            autoCapitalize="none"
                             value={email}
                             onChangeText={text => setEmail(text)} />
                         <TextInput style={styles.input} placeholder="Digite sua senha"
                             secureTextEntry={true}
+                            autoCapitalize="none"
                             value={password}
                             onChangeText={text => setPassword(text)} />
                         <Button title={
-                                loadingAuth ? (
-                                    <ActivityIndicator size={24} color="#fff" />
-                                ) : (
-                                    'Entrar'
-                                )
-                            } onPress={handleLogin} btnStyle={styles.btnStyle2} txtStyle={styles.txtStyle2} />
+                            loadingAuth ? (
+                                <ActivityIndicator size={24} color="#fff" />
+                            ) : (
+                                'Entrar'
+                            )
+                        } onPress={handleLogin} btnStyle={styles.btnStyle2} txtStyle={styles.txtStyle2} />
                         <Button title="Ainda não tem uma conta? Cadastre-se!" onPress={handleSignUp} btnStyle={styles.btnStyle1} txtStyle={styles.txtStyle1} />
-                        {/* {!isBiometricSupported &&
-                            <TouchableOpacity style={styles.fingerprint}>
-                                <MaterialIcons name="fingerprint" size={60} />
-                            </TouchableOpacity>} */}
                     </View>
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
@@ -131,9 +119,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         marginVertical: 10,
         fontSize: 16
-    },
-    fingerprint: {
-        paddingTop: 50
     }
 });
 

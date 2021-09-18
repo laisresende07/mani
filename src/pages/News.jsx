@@ -9,50 +9,85 @@ import {
     Linking,
     Alert
 } from "react-native";
-// import { parse } from 'fast-xml-parser';
 import axios from 'axios';
 import { parseString } from "react-native-xml2js";
-import { MainHeader } from "../components/MainHeader";
+import { HeaderBack } from "../components/HeaderBack";
 import colors from "../styles/colors";
-
-import { AuthContext } from '../contexts/auth'
+import fonts from "../styles/fonts";
 
 export function News() {
+    const [noticias, setNoticias] = useState([]);
 
-    const { noticias } = useContext(AuthContext);
+    useEffect(() => {
+        let list = [];
+
+        const regex = /<p>(.*?)<\/p>/;
+        axios
+            .get("https://www.mobills.com.br/blog/feed/?barra=esconder")
+            .then((response) => {
+                parseString(response.data, function (err, result) {
+                    Object.entries(result.rss.channel[0]).map(([item, value]) => {
+                        if (item == "item") {
+                            Object.entries(value).map(([item2, value2]) => {
+                                list.push(value2);
+                            });
+                        }
+                    });
+                });
+            })
+            .then(() => {
+                const noticia = [];
+                list &&
+                    list.forEach((item, index) => {
+                        const corresp = regex.exec(item.description[0]);
+                        const firstParagraphWithoutHtml = corresp ? corresp[1] : "";
+
+                        const temp = {
+                            id: index,
+                            title: item.title[0],
+                            description: firstParagraphWithoutHtml,
+                            link: item.link[0],
+                        };
+
+                        noticia.push(temp);
+                    });
+
+                setNoticias(noticia);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, [])
 
     const OpenURLButton = ({ url, children }) => {
         const handlePress = useCallback(async () => {
-            // Checking if the link is supported for links with custom URL scheme.
             const supported = await Linking.canOpenURL(url);
 
             if (supported) {
-                // Opening the link with some app, if the URL scheme is "http" the web link should be opened
-                // by some browser in the mobile
                 await Linking.openURL(url);
             } else {
                 Alert.alert(`Don't know how to open this URL: ${url}`);
             }
         }, [url]);
 
-        return <TouchableOpacity onPress={handlePress} style={{ backgroundColor: colors.orange, position: 'absolute', height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, width: 90, bottom: -15, right: 15 }}>
-            <Text style={{ fontWeight: 'bold', color: colors.white, textTransform: 'uppercase', fontSize: 12, letterSpacing: 1 }}>{children}</Text>
+        return <TouchableOpacity onPress={handlePress} style={styles.btn}>
+            <Text style={styles.btnText}>{children}</Text>
         </TouchableOpacity>;
     };
 
 
     return (
         <SafeAreaView style={styles.container}>
-            <MainHeader />
+            <HeaderBack />
             <View style={styles.innerContainer}>
                 <FlatList
                     showsVerticalScrollIndicator={false}
                     data={noticias}
                     keyExtractor={item => item.id.toString()}
                     renderItem={({ item }) => (
-                        <View style={{ marginBottom: 30, borderWidth: 1, borderColor: colors.orange, borderRadius: 5, padding: 15, paddingBottom: 30 }}>
-                            <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>{item.title}</Text>
-                            <Text>{item.description}</Text>
+                        <View style={styles.newsItem}>
+                            <Text style={styles.newsTitle}>{item.title}</Text>
+                            <Text style={styles.description}>{item.description}</Text>
                             <OpenURLButton url={item.link}>Ler mais</OpenURLButton>
                         </View>
                     )}
@@ -75,6 +110,45 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         flex: 1,
     },
+    newsItem: {
+        marginBottom: 30,
+        borderWidth: 1,
+        borderColor: colors.orange,
+        borderRadius: 5,
+        padding: 15,
+        paddingBottom: 25
+    },
+    newsTitle: {
+        marginBottom: 5,
+        fontFamily: fonts.semibold,
+        color: colors.blue,
+        lineHeight: 18,
+        fontSize: 16
+    },
+    description: {
+        fontFamily: fonts.regular,
+        fontSize: 15,
+        lineHeight: 17
+    },
+    btn: {
+        backgroundColor: colors.orange, 
+        position: 'absolute', 
+        height: 30, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        borderRadius: 4, 
+        width: 90, 
+        bottom: -15, 
+        right: 15
+    },
+    btnText: {
+        fontFamily: fonts.semibold,
+        color: colors.white, 
+        textTransform: 'uppercase', 
+        fontSize: 13, 
+        letterSpacing: 1 
+    }
 });
 
 export default News;

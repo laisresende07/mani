@@ -1,30 +1,31 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
     Text,
-    View,
     SafeAreaView,
     StyleSheet,
-    TouchableOpacity,
-    FlatList
+    View,
+    Dimensions,
+    FlatList,
+    ScrollView
 } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-import colors from "../styles/colors";
-import fonts from "../styles/fonts";
+import CalendarPicker from 'react-native-calendar-picker';
 import firebase from '../services/firebaseConnection';
 import { AuthContext } from '../contexts/auth';
-import NumberFormat from 'react-number-format';
-import { format } from 'date-fns';
-import { useNavigation } from "@react-navigation/core";
-
-import FloatingButton from '../components/FloatingButton';
+import { HeaderBack } from "../components/HeaderBack";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import colors from "../styles/colors";
+import fonts from "../styles/fonts";
+import moment from "moment";
 import { HistoricoList } from "../components/HistoricoList";
-import { MainHeader } from "../components/MainHeader";
+import NumberFormat from 'react-number-format';
 
-export function Home() {
-    const navigation = useNavigation();
-
-    const [saldo, setSaldo] = useState(0);
-    const [historico, setHistorico] = useState([]);
+export function DailyRecords() {
+    moment.locale('pt', {
+        months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+    })
+    const [selectedStartDate, setSelectedStartDate] = useState();
+    const [values, setValues] = useState([]);
+    const startDate = selectedStartDate ? selectedStartDate : new Date();
     const [receitas, setReceitas] = useState(0);
     const [despesas, setDespesas] = useState(0);
 
@@ -32,46 +33,48 @@ export function Home() {
     const uid = user && user.uid;
 
     useEffect(() => {
-        async function loadList() {
-            await firebase
-                .database()
-                .ref('users')
-                .child(uid)
-                .on('value', snapshot => {
-                    setSaldo(snapshot.val().saldo);
-                });
+        setSelectedStartDate(new Date())
+        loadValues(startDate)
+    }, [])
+    
 
-            await firebase
-                .database()
-                .ref('historico')
-                .child(uid)
-                .orderByChild('date')
-                .equalTo(format(new Date(), 'dd/MM/yyyy'))
-                .limitToLast(4)
-                .on('value', snapshot => {
-                    setHistorico([]);
-                    let list = [];
+    function onDateChange(date) {
+        setSelectedStartDate(date);
+        loadValues(date);
+    }
 
-                    snapshot.forEach(childItem => {
-                        list.unshift({
-                            key: childItem.key,
-                            tipo: childItem.val().tipo,
-                            valor: childItem.val().valor,
-                            date: childItem.val().date,
-                            descricao: childItem.val().descricao,
-                            categoria: childItem.val().categoria
-                        });
+    async function loadValues(date) {
+        await firebase
+            .database()
+            .ref('historico')
+            .child(uid)
+            .orderByChild('date')
+            .equalTo(moment(date).format('DD/MM/YYYY'))
+            .on('value', snapshot => {
+                setValues([]);
+                let list = [];
+
+                snapshot.forEach(childItem => {
+                    list.unshift({
+                        key: childItem.key,
+                        tipo: childItem.val().tipo,
+                        valor: childItem.val().valor,
+                        date: childItem.val().date,
+                        descricao: childItem.val().descricao,
+                        categoria: childItem.val().categoria
                     });
-
-                    setHistorico(list);
                 });
+
+                setValues(list);
+                console.log(list)
+            });
 
             await firebase
                 .database()
                 .ref('historico')
                 .child(uid)
                 .orderByChild('date')
-                .equalTo(format(new Date(), 'dd/MM/yyyy'))
+                .equalTo(moment(date).format('DD/MM/YYYY'))
                 .on('value', snapshot => {
 
                     let rec = 0, desp = 0;
@@ -86,32 +89,35 @@ export function Home() {
                         setDespesas(desp);
                     });
                 });
-        }
-
-        loadList();
-    }, []);
+    }
 
     return (
         <SafeAreaView style={styles.container}>
-            <MainHeader />
-            <View style={styles.innerContainer}>
-                <View style={[styles.card, styles.row]}>
-                    <Text style={styles.text}>SALDO</Text>
-                    <Text style={styles.value}>
-                        <NumberFormat
-                            value={saldo}
-                            displayType={'text'}
-                            thousandSeparator={'.'}
-                            decimalSeparator={','}
-                            decimalScale={2}
-                            prefix={'R$ '}
-                            fixedDecimalScale={true}
-                            renderText={value => <Text>{value}</Text>}
-                        />
-                    </Text>
+            <HeaderBack />
+            <ScrollView style={styles.innerContainer} showsVerticalScrollIndicator={false}>
+                <Text style={styles.title}>Escolha o dia</Text>
+                <View style={styles.calendar}>
+                    <CalendarPicker
+                        onDateChange={(date) => onDateChange(date)}
+                        weekdays={['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']}
+                        months={['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']}
+                        previousComponent={<AntDesign name={"left"} size={20} color={colors.blue} />}
+                        nextComponent={<AntDesign name={"right"} size={20} color={colors.blue} />}
+                        selectedDayStyle={styles.selectedDay}
+                        todayBackgroundColor={colors.backgroundColor}
+                        selectMonthTitle={"Selecione o mês de "}
+                        selectYearTitle={"Selecione o ano"}
+                        width={Dimensions.get("window").width * 0.9}
+                        maxDate={new Date()}
+                        textStyle={{
+                            fontSize: 15
+                        }}
+                    />
                 </View>
-                <View style={styles.content}>
-                    <Text style={styles.caption}>HOJE</Text>
+
+                <View>
+                    <Text style={styles.selectedDate}>{(moment(startDate).format('DD  MMMM  YYYY')).toString()}</Text>
+
                     <View style={styles.card}>
                         <View style={styles.row}>
                             <View style={styles.amount}>
@@ -146,26 +152,22 @@ export function Home() {
                             </View>
                         </View>
                         {
-                            historico.length > 0 ?
+                            values.length > 0 ?
                                 <FlatList
                                     style={styles.list}
                                     showsVerticalScrollIndicator={false}
-                                    data={historico}
+                                    data={values}
                                     keyExtractor={item => item.key}
-                                    renderItem={({ item }) => <HistoricoList data={item} showDate={false} />}
+                                    renderItem={({ item }) => <HistoricoList data={item} showDate={true} />}
                                 />
                                 :
                                 <View style={styles.empty}>
-                                    <Text style={styles.simpleText}>Sem movimentações no dia de hoje.</Text>
+                                    <Text style={styles.simpleText}>Sem movimentações neste dia.</Text>
                                 </View>
                         }
-                        <TouchableOpacity style={styles.seeAllBtn} onPress={() => navigation.navigate("Relatórios diários")}>
-                            <Text style={styles.seeAllTxt}>VER TUDO</Text>
-                        </TouchableOpacity>
                     </View>
                 </View>
-                <FloatingButton />
-            </View>
+            </ScrollView>
         </SafeAreaView >
     );
 }
@@ -173,14 +175,31 @@ export function Home() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: 0,
-        marginHorizontal: 0,
-        backgroundColor: colors.shape
+        justifyContent: 'center',
     },
     innerContainer: {
-        marginTop: 30,
-        marginHorizontal: 20,
         flex: 1,
+        marginHorizontal: 20
+    },
+    title: {
+        fontFamily: fonts.semibold,
+        color: colors.orange,
+        fontSize: 20,
+        textAlign: 'center',
+        textTransform: 'uppercase',
+        letterSpacing: .7,
+        marginTop: 10
+    },
+    selectedDay: {
+        backgroundColor: colors.orange,
+    },
+    calendar: {
+        borderWidth: .5,
+        borderColor: colors.blue,
+        padding: 10,
+        borderRadius: 8,
+        marginVertical: 15,
+        marginHorizontal: 5
     },
     card: {
         padding: 20,
@@ -194,29 +213,25 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.22,
         shadowRadius: 2.22,
         elevation: 3,
+        marginBottom: 30,
+        marginHorizontal: 5
     },
     row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
-    text: {
-        fontSize: 18,
+    list: {
+        marginTop: 10
+    },
+    selectedDate: {
         fontFamily: fonts.semibold,
-        color: colors.orange
-    },
-    value: {
-        fontSize: 20,
-        fontFamily: fonts.semibold,
-        color: colors.blue
-    },
-    content: {
-        marginTop: 20
-    },
-    caption: {
-        fontSize: 16,
-        fontFamily: fonts.regular,
         color: colors.blue,
-        marginBottom: 5
+        fontSize: 18,
+        textTransform: 'uppercase',
+        letterSpacing: .7,
+        marginTop: 15,
+        marginBottom: 5,
+        marginHorizontal: 5
     },
     up: {
         paddingLeft: 7,
@@ -248,29 +263,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: colors.blue
     },
-    list: {
-        marginTop: 10
-    },
-    item: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: .5,
-        borderColor: colors.blue,
-        borderRadius: 6,
-        padding: 10,
-        marginTop: 10
-    },
-    seeAllBtn: {
-        alignSelf: 'flex-end',
-        marginTop: 10
-    },
-    seeAllTxt: {
-        fontFamily: fonts.regular,
-        color: colors.orange
-    },
     empty: {
-        marginVertical: 15
+        marginTop: 20
     }
 });
 
-export default Home;
+export default DailyRecords;

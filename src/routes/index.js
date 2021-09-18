@@ -6,7 +6,8 @@ import Register from "../pages/Register";
 import Login from "../pages/Login";
 import Home from "../pages/Home";
 import Profile from "../pages/Profile";
-import Records from "../pages/Records";
+import DailyRecords from "../pages/DailyRecords";
+import MontlyRecords from "../pages/MontlyRecords";
 import Categories from "../pages/Categories";
 import News from "../pages/News";
 import fonts from "../styles/fonts";
@@ -15,6 +16,7 @@ import { AuthContext } from "../contexts/auth";
 import { View, ActivityIndicator } from "react-native";
 import Income from "../pages/Income";
 import Expense from "../pages/Expense";
+import EditProfile from "../pages/EditProfile";
 
 const LoginStackNav = createStackNavigator();
 function LoginStack() {
@@ -29,6 +31,20 @@ function LoginStack() {
       <LoginStackNav.Screen name="Login" component={Login} />
       <LoginStackNav.Screen name="Register" component={Register} />
     </LoginStackNav.Navigator>
+  );
+}
+
+const ProfileStackNav = createStackNavigator();
+function ProfileStack() {
+  return (
+    <ProfileStackNav.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <ProfileStackNav.Screen name="Profile" component={Profile} />
+      <ProfileStackNav.Screen name="EditProfile" component={EditProfile} />
+    </ProfileStackNav.Navigator>
   );
 }
 const Drawer = createDrawerNavigator();
@@ -73,8 +89,9 @@ function RootContainer() {
         <Drawer.Screen name="Notícias" component={News} />
         <Drawer.Screen name="Nova receita" component={Income} />
         <Drawer.Screen name="Nova despesa" component={Expense} />
-        <Drawer.Screen name="Perfil" component={Profile} />
-        <Drawer.Screen name="Relatórios" component={Records} />
+        <Drawer.Screen name="Perfil" component={ProfileStack} />
+        <Drawer.Screen name="Relatórios diários" component={DailyRecords} />
+        <Drawer.Screen name="Relatórios mensais" component={MontlyRecords} />
       </Drawer.Navigator>
     );
   } else {
@@ -83,143 +100,3 @@ function RootContainer() {
 }
 
 export default RootContainer;
-
-
-
-
-
-
-
-// const HomeStackNav = createStackNavigator();
-
-// function HomeStack() {
-//   return (
-//     <HomeStackNav.Navigator>
-//       <HomeStackNav.Screen
-//         name="Home"
-//         component={Home}
-//         options={({ navigation }) => ({
-//           headerLeft: () => drawerButton(navigation),
-//           headerRight: () => profileButton(navigation),
-//           title: "",
-//           headerStyle: {
-//             backgroundColor: colors.shape,
-//             shadowColor: colors.shape,
-//             elevation: 0,
-//           },
-//           headerTintColor: colors.blue,
-//           headerTitleStyle: {
-//             fontFamily: fonts.regular,
-//           },
-//         })}
-//       />
-
-//       <HomeStackNav.Screen name="Income" component={Income} />
-//       <HomeStackNav.Screen name="Expense" component={Expense} />
-//     </HomeStackNav.Navigator>
-//   );
-// }
-
-// const ProfileStackNav = createStackNavigator();
-// function ProfileStack() {
-//   return (
-//     <ProfileStackNav.Navigator initialRouteName="Perfil">
-//       <ProfileStackNav.Screen
-//         name="Perfil"
-//         component={Profile}
-//         options={({ navigation }) => ({
-//           headerLeft: () => drawerButton(navigation),
-//           headerRight: () => profileButton(navigation),
-//           title: "",
-//           headerStyle: {
-//             backgroundColor: colors.shape,
-//             shadowColor: colors.shape,
-//             elevation: 0,
-//           },
-//           headerTintColor: colors.blue,
-//           headerTitleStyle: {
-//             fontFamily: fonts.regular,
-//           },
-//         })}
-//       />
-//     </ProfileStackNav.Navigator>
-//   );
-// }
-
-// const RecordsStackNav = createStackNavigator();
-// function RecordsStack() {
-//   return (
-//     <RecordsStackNav.Navigator>
-//       <RecordsStackNav.Screen
-//         name="Records"
-//         component={Records}
-//         options={({ navigation }) => ({
-//           headerLeft: () => drawerButton(navigation),
-//           headerRight: () => profileButton(navigation),
-//           title: "",
-//           headerStyle: {
-//             backgroundColor: colors.shape,
-//             shadowColor: colors.shape,
-//             elevation: 0,
-//           },
-//           headerTintColor: colors.blue,
-//           headerTitleStyle: {
-//             fontFamily: fonts.regular,
-//           },
-//         })}
-//       />
-//     </RecordsStackNav.Navigator>
-//   );
-// }
-
-// const CategoriesStackNav = createStackNavigator();
-// function CategoriesStack() {
-//   return (
-//     <CategoriesStackNav.Navigator initialRouteName="Categories">
-//       <CategoriesStackNav.Screen
-//         name="Categories"
-//         component={Categories}
-//         options={({ navigation }) => ({
-//           headerLeft: () => drawerButton(navigation),
-//           headerRight: () => profileButton(navigation),
-//           title: "",
-//           headerStyle: {
-//             backgroundColor: colors.shape,
-//             shadowColor: colors.shape,
-//             elevation: 0,
-//           },
-//           headerTintColor: colors.blue,
-//           headerTitleStyle: {
-//             fontFamily: fonts.regular,
-//           },
-//         })}
-//       />
-//     </CategoriesStackNav.Navigator>
-//   );
-// }
-
-// const NewsStackNav = createStackNavigator();
-// function NewsStack() {
-//   return (
-//     <NewsStackNav.Navigator initialRouteName="News">
-//       <NewsStackNav.Screen
-//         name="News"
-//         component={News}
-//         options={({ navigation }) => ({
-//           headerLeft: () => drawerButton(navigation),
-//           headerRight: () => profileButton(navigation),
-//           title: "",
-//           headerStyle: {
-//             backgroundColor: colors.shape,
-//             shadowColor: colors.shape,
-//             elevation: 0,
-//           },
-//           headerTintColor: colors.blue,
-//           headerTitleStyle: {
-//             fontFamily: fonts.regular,
-//           },
-//         })}
-//       />
-//     </NewsStackNav.Navigator>
-//   );
-// }
