@@ -66,7 +66,6 @@ export function DailyRecords() {
                 });
 
                 setValues(list);
-                console.log(list)
             });
 
             await firebase

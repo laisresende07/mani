@@ -121,7 +121,7 @@ export function Categories() {
                 let list = [];
 
                 snapshot.forEach(childItem => {
-                    list.push({
+                    list.unshift({
                         key: childItem.key,
                         tipo: childItem.val().tipo,
                         valor: childItem.val().valor,

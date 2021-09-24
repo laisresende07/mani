@@ -46,11 +46,13 @@ export function Welcome() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.white
+        backgroundColor: colors.white,
+        justifyContent: 'center'
     },
     btnStyle1: {
         borderWidth: 2,
-        borderColor: colors.orange
+        borderColor: colors.orange,
+        marginTop: 15
     },
     txtStyle1: {
         fontSize: 16,
@@ -58,7 +60,7 @@ const styles = StyleSheet.create({
         fontFamily: fonts.semibold
     },
     btnStyle2: {
-        backgroundColor: colors.blue
+        backgroundColor: colors.blue,
     },
     txtStyle2: {
         fontSize: 16,
@@ -66,17 +68,15 @@ const styles = StyleSheet.create({
         fontFamily: fonts.semibold
     },
     wrapper: {
-        flex: 1,
         alignItems: "center",
         justifyContent: "space-around",
         paddingHorizontal: 20,
-        paddingVertical: 100
     },
     title: {
         fontSize: 32,
         textAlign: "center",
         color: colors.orange,
-        marginTop: 50,
+        marginTop: 30,
         fontFamily: fonts.semibold,
     },
     image: {
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
         width: '100%',
         fontSize: 14,
         paddingHorizontal: 20,
-        paddingVertical: 5,
+        paddingVertical: 10,
         color: colors.blue,
         fontFamily: fonts.regular,
         lineHeight: 14,

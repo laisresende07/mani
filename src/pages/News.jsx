@@ -55,7 +55,7 @@ export function News() {
                 setNoticias(noticia);
             })
             .catch((error) => {
-                console.log(error);
+                alert('Por favor tente mais tarde.')
             });
     }, [])
 

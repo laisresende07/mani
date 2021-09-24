@@ -5,7 +5,6 @@ import {
     SafeAreaView,
     StyleSheet,
     TextInput,
-    TouchableOpacity,
     KeyboardAvoidingView,
     TouchableWithoutFeedback,
     Platform,
@@ -24,8 +23,8 @@ import { HeaderBack } from "../components/HeaderBack";
 
 
 export function Login() {
-    const [email, setEmail] = useState('lais@gmail.com');
-    const [password, setPassword] = useState('lais123');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     const navigation = useNavigation();
 

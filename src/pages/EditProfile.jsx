@@ -31,7 +31,7 @@ export function EditProfile() {
                 user.updateProfile({
                     displayName: name
                 }).catch((error) => {
-                    console.log(error)
+                    alert('Não conseguimos atualizar seu nome, por favor tente mais tarde.')
                 });
 
                 let saldo = 0;
@@ -57,13 +57,13 @@ export function EditProfile() {
             if (email != '') {
                 user.updateEmail(email)
                     .catch((error) => {
-                        console.log(error)
+                        alert('Não conseguimos atualizar seu email, por favor tente mais tarde.')
                     });
             }
 
             if (password != '') {
                 user.updatePassword(password).catch((error) => {
-                    console.log(error)
+                    alert('Não conseguimos atualizar sua senha, por favor tente mais tarde.')
                 });
             }
         }

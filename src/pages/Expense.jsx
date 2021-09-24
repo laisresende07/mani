@@ -48,15 +48,14 @@ export function Expense() {
     const handleBarCodeScanned = (scanningResult) => {
         if (!scanned) {
             const { data } = scanningResult;
-            alert(data);
-            console.log(data)
             let valueNFC = data.split("|")
 
-            if (((typeof (+valueNFC[4])) == 'number') && !(isNaN(+valueNFC[4]))) {
+            if ((valueNFC[0].includes("https://nfce.fazenda.mg.gov.br/portalnfce/sistema/qrcode.xhtml")) && ((typeof (+valueNFC[4])) == 'number') && !(isNaN(+valueNFC[4]))) {
                 setValor(valueNFC[4]);
+            }else{
+                alert('Não foi possível escanear o QR code, por favor insira os dados manualmente.')
             }
             setModalVisible(false);
-            console.log(valor)
         }
     };
 
@@ -94,13 +93,6 @@ export function Expense() {
         loadCategories();
 
     }, []);
-
-    if (hasPermission === null) {
-        return <View />;
-    }
-    if (hasPermission === false) {
-        return <Text>No access to camera</Text>;
-    }
 
     function handleCancel() {
         Keyboard.dismiss();
@@ -206,9 +198,9 @@ export function Expense() {
                                     barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
                                     style={[StyleSheet.absoluteFillObject, styles.scanner]}
                                 >
-                                    <View style={{width: '100%', height: '20%', backgroundColor: 'rgba(0,0,0,.5)'}} />
+                                    <View style={{ width: '100%', height: '20%', backgroundColor: 'rgba(0,0,0,.5)' }} />
                                     <BarcodeMask showAnimatedLine height='100%' width='100%' edgeBorderWidth={0} animatedLineColor={colors.blue} animatedLineWidth='80%' />
-                                    <View style={{width: '100%', height: '20%', backgroundColor: 'rgba(0,0,0,.5)', position: 'absolute', bottom: 0, borderBottomEndRadius: 20, borderBottomLeftRadius: 20}} />
+                                    <View style={{ width: '100%', height: '20%', backgroundColor: 'rgba(0,0,0,.5)', position: 'absolute', bottom: 0, borderBottomEndRadius: 20, borderBottomLeftRadius: 20 }} />
                                 </BarCodeScanner>
                             </View>
                         </View>
@@ -233,10 +225,13 @@ export function Expense() {
                         </TouchableWithoutFeedback>
                     </View>
 
-                    <TouchableOpacity onPress={() => { setScanned(false); setModalVisible(true) }} style={{ backgroundColor: 'rgba(236, 139, 94, .6)', paddingHorizontal: 25, paddingVertical: 15, borderRadius: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 40 }}>
-                        <MaterialIcons name="qr-code-2" size={24} color={colors.blue} />
-                        <Text style={{ color: colors.blue, fontFamily: fonts.semibold, letterSpacing: .5, fontSize: 15, marginLeft: 10 }}>ESCANEAR NOTA FISCAL</Text>
-                    </TouchableOpacity>
+                    {
+                        (hasPermission !== null && hasPermission !== false) &&
+                        <TouchableOpacity onPress={() => { setScanned(false); setModalVisible(true) }} style={{ backgroundColor: 'rgba(236, 139, 94, .6)', paddingHorizontal: 25, paddingVertical: 15, borderRadius: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 40 }}>
+                            <MaterialIcons name="qr-code-2" size={24} color={colors.blue} />
+                            <Text style={{ color: colors.blue, fontFamily: fonts.semibold, letterSpacing: .5, fontSize: 15, marginLeft: 10 }}>ESCANEAR NOTA FISCAL</Text>
+                        </TouchableOpacity>
+                    }
 
                     <TouchableWithoutFeedback onPress={() => setShowDatePicker(true)}>
                         <View style={styles.inputIconView}>
