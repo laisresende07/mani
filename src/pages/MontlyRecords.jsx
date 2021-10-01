@@ -158,7 +158,7 @@ export function MontlyRecords() {
                         <View style={styles.card}>
                             <View style={styles.row}>
                                 <View style={styles.amount}>
-                                    <MaterialIcons name='north-east' size={20} style={styles.up} />
+                                    <MaterialIcons name='south-west' size={20} style={styles.up} />
                                     <Text style={styles.simpleText}>
                                         <NumberFormat
                                             value={receitas}
@@ -173,7 +173,7 @@ export function MontlyRecords() {
                                     </Text>
                                 </View>
                                 <View style={styles.amount}>
-                                    <MaterialIcons name='south-west' size={20} style={styles.down} />
+                                    <MaterialIcons name='north-east' size={20} style={styles.down} />
                                     <Text style={styles.simpleText}>
                                         <NumberFormat
                                             value={despesas}

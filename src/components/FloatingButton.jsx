@@ -77,7 +77,7 @@ export function FloatingButton() {
 
             <TouchableWithoutFeedback onPress={addIncome}>
                 <Animated.View style={[styles.button, styles.secondary, incomeStyle]}>
-                    <MaterialIcons name="north-east" size={24} color={colors.green} />
+                    <MaterialIcons name="south-west" size={24} color={colors.green} />
                 </Animated.View>
             </TouchableWithoutFeedback>
             
@@ -87,7 +87,7 @@ export function FloatingButton() {
 
             <TouchableWithoutFeedback onPress={addExpense}>
                 <Animated.View style={[styles.button, styles.secondary, expenseStyle]}>
-                    <MaterialIcons name="south-west" size={24} color={colors.red} />
+                    <MaterialIcons name="north-east" size={24} color={colors.red} />
                 </Animated.View>
             </TouchableWithoutFeedback>
 

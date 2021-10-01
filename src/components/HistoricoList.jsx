@@ -18,7 +18,7 @@ export function HistoricoList({ data, showDate }) {
             <View style={styles.item}>
                 <View style={styles.row}>
                     <MaterialIcons
-                        name={data.tipo === 'despesa' ? 'south-west' : 'north-east'}
+                        name={data.tipo === 'despesa' ? 'north-east' : 'south-west'}
                         size={20}
                         style={data.tipo === 'despesa' ? styles.down : styles.up}
                     />
@@ -43,18 +43,18 @@ export function HistoricoList({ data, showDate }) {
                 </View>
                 <Collapsible collapsed={isCollapsed} style={styles.collapsible}>
                     {
-                        data.descricao ?
+                        data.categoria ?
                             <View style={styles.row}>
                                 <MaterialIcons name='bookmark-border' size={20} color={colors.gray} />
-                                <Text style={styles.simpleText}>{data.descricao}</Text>
+                                <Text style={styles.simpleText}>{data.categoria}</Text>
                             </View> :
                             <Text style={{ height: 0 }}></Text>
                     }
                     {
-                        data.categoria ?
+                        data.descricao ?
                             <View style={styles.row}>
                                 <MaterialIcons name='textsms' size={20} color={colors.gray} />
-                                <Text style={styles.simpleText}>{data.categoria}</Text>
+                                <Text style={styles.simpleText}>{data.descricao}</Text>
                             </View> :
                             <Text style={{ height: 0 }}></Text>
                     }

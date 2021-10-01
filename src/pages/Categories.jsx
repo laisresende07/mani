@@ -220,12 +220,12 @@ export function Categories() {
                 <Text style={styles.title}>Categorias</Text>
                 <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', marginBottom: 20 }}>
                     <TouchableOpacity onPress={() => setMode('receita')} style={mode == 'receita' ? [styles.buttonsHeader, styles.buttonsHeaderIncomeActive] : styles.buttonsHeader}>
-                        <MaterialIcons name="north-east" size={20} color={colors.green} />
+                        <MaterialIcons name="south-west" size={20} color={colors.green} />
                         <Text style={mode == 'receita' ? [styles.textButtonsHeader, styles.textButtonsHeaderActive] : styles.textButtonsHeader}>Receita</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => setMode('despesa')} style={mode == 'despesa' ? [styles.buttonsHeader, styles.buttonsHeaderExpenseActive] : styles.buttonsHeader}>
-                        <MaterialIcons name="south-west" size={20} color={colors.red} />
+                        <MaterialIcons name="north-east" size={20} color={colors.red} />
                         <Text style={mode == 'despesa' ? [styles.textButtonsHeader, styles.textButtonsHeaderActive] : styles.textButtonsHeader}>Despesa</Text>
                     </TouchableOpacity>
                 </View>
