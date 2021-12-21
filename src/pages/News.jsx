@@ -53,6 +53,7 @@ export function News() {
                     });
 
                 setNoticias(noticia);
+                console.log(noticia)
             })
             .catch((error) => {
                 alert('Por favor tente mais tarde.')
