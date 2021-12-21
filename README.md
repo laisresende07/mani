@@ -5,7 +5,11 @@
 
 <br>
 
-Projeto apresentado ao Centro Universitário de Formiga –
+Mani é um aplicativo gerenciador de finanças pessoais que tem como propósito oferecer uma interface prática e intuitiva para auxiliar o usuário a menter um controle de suas finanças.
+
+<br>
+
+Esse projeto foi apresentado ao Centro Universitário de Formiga –
 UNIFOR-MG, como requisito parcial para obtenção do título de
 bacharel em Ciência da Computação.
 
