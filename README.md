@@ -27,7 +27,7 @@ O protótipo desse aplicativo foi desenvolvido no editor online de design gráfi
 
 ## Play Store
 
-O aplicativo foi disponibilizado na Play Store. É possível obtê-lo clicando no link: https://play.google.com/store/apps/details?id=com.laisresende.mani
+O aplicativo foi disponibilizado para download na Play Store. É possível obtê-lo clicando no link: https://play.google.com/store/apps/details?id=com.laisresende.mani
 
 <br>
 
